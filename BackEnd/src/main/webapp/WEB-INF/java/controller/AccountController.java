@@ -1,14 +1,24 @@
 package controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import DAO.AccountDAO;
+import domain.Account;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/account")
 public class AccountController {
-    @GetMapping("/login")
-    public String test() {
-        return "This is the return";
+    private AccountDAO accountDAO;
+
+    @Autowired
+    public void setAccountDAO(AccountDAO accountDAO) {
+        this.accountDAO = accountDAO;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/login/{username}")
+    public String login(@PathVariable String username) {
+         Account account = accountDAO.getAccountByLogin(username);
+         return account.getUsername() + account.getGender() + account.getRole();
     }
 }
