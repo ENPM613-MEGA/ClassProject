@@ -15,10 +15,9 @@ public class AccountController {
         this.accountDAO = accountDAO;
     }
 
-    @ResponseBody
     @RequestMapping(value = "/login/{username}")
-    public String login(@PathVariable String username) {
+    public Account login(@PathVariable String username) {
          Account account = accountDAO.getAccountByLogin(username);
-         return account.getUsername() + account.getGender() + account.getRole();
+         return account;
     }
 }
