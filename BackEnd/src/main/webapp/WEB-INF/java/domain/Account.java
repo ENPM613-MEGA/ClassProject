@@ -3,7 +3,8 @@ package domain;
 
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
+
 
 public class Account implements Serializable {
     private Integer id;
