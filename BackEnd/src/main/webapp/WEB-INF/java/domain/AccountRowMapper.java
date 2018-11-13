@@ -8,14 +8,18 @@ import java.sql.SQLException;
 public class AccountRowMapper implements RowMapper {
 
     public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Account account = new Account();
-        account.setId(rs.getInt("id"));
-        account.setBirth(rs.getDate("birth"));
-        account.setGender(rs.getString("gender"));
-        account.setPasswd(rs.getString("password"));
-        account.setRole(rs.getString("role"));
-        account.setPoints(rs.getInt("points"));
-        account.setUsername(rs.getString("username"));
+
+        Account.AccountBuilder accountBuilder = new Account.AccountBuilder(rs.getInt("id"),
+                rs.getString("username"), rs.getString("gender"),
+                rs.getString("role"));
+
+        Account account = accountBuilder.
+                setAddress(rs.getString("addr")).
+                setBirth(rs.getDate("birth")).
+                setEmail(rs.getString("email")).
+                setPasswd(rs.getString("password")).
+                setPoints(rs.getInt("points")).
+                build();
         return account;
     }
 }

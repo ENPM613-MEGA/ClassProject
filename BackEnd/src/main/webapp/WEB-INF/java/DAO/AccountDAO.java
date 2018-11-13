@@ -19,7 +19,7 @@ public class AccountDAO {
     }
 
     public final String GET_AN_ACCOUNT_SQL = "SELECT id, username, password, gender, role," +
-            "birth, points FROM Users WHERE username = ?";
+            "birth, points, addr, email FROM Users WHERE username = ?";
 
     public Account getAccountByLogin(String username) {
         try {

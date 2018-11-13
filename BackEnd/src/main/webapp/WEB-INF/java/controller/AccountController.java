@@ -20,21 +20,28 @@ public class AccountController {
         this.accountDAO = accountDAO;
     }
 
-    @RequestMapping(value = "/login/{username}")
-    public Map<String, Object> login(@PathVariable String username) {
+    @RequestMapping(value = "/login/{username}/{passwd}")
+    public Map<String, Object> login(@PathVariable String username, @PathVariable String passwd) {
         Account account = null;
         Map<String, Object> mapModel = new HashMap<>();
 
         try {
             account = accountDAO.getAccountByLogin(username);
-            mapModel.put("status", "success");
-            mapModel.put("userProfile", account);
-            mapModel.put("name", "Haonan Yu");
+            if (account.getPasswd().equals(passwd)) {
+                mapModel.put("status", "success");
+                mapModel.put("userProfile", account);
+                //TODO: add userCourses
+                //TODO: add userAssignments
+                //TODO: add userGrades
+            }else {
+                mapModel.put("status", "failure");
+                mapModel.put("reason", "password incorrect");
+            }
          }catch (EmptyResultDataAccessException e) {
             mapModel.put("status", "failure");
             mapModel.put("reason", "Account not exist");
         }catch (DataAccessException e) {
-            mapModel.put("status", "fail");
+            mapModel.put("status", "failure");
             mapModel.put("reason", "Database connect error");
         }
         return mapModel;
