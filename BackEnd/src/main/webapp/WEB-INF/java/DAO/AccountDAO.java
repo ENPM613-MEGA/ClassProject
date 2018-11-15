@@ -24,6 +24,7 @@ public class AccountDAO {
     public final String GET_AN_ACCOUNT_SQL = "SELECT id, username, password, gender, role," +
             "birth, points, addr, email, color_blind FROM Users WHERE username = ?";
 
+
     public Account getAccountByUsername(String username) {
         try {
             Account account = (Account) jdbcTemplate.queryForObject(GET_AN_ACCOUNT_SQL, new Object[]{username},

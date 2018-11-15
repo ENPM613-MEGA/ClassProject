@@ -46,7 +46,7 @@ public class AccountController {
             mapModel.put("status", "failure");
             mapModel.put("reason", "Account not exist");
         }catch (DataAccessException e) {
-            mapModel.put("status", "failure");
+            mapModel.put("status", "fail");
             mapModel.put("reason", "Database connect error");
         }
         return mapModel;
