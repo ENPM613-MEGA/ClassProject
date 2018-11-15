@@ -2,12 +2,16 @@ package controller;
 
 import DAO.AccountDAO;
 import domain.Account;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import utils.JSONHelper;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +56,10 @@ public class AccountController {
         return mapModel;
     }
 
-
+    /*
+    * register a new account
+    * the [username] [passwd] [gender] [role] are required
+    * */
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> registerNewAccount(@RequestBody Account.AccountBuilder accountBuilder) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -68,7 +75,11 @@ public class AccountController {
         return mapModel;
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    /*
+    * Update [passwd, email, birth, addr, colorBlind]
+    * Overwrite the original account data
+    * */
+    @RequestMapping(value = "/update-account", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> updateAccount(@RequestBody Account.AccountBuilder accountBuilder) {
         Map<String, Object> mapModel = new HashMap<>();
         try{
@@ -76,6 +87,23 @@ public class AccountController {
             accountDAO.updateAccount(account);
             mapModel.put("status", "success");
         }catch (Exception e) {
+            mapModel.put("status", "failure");
+            mapModel.put("reason", e.getMessage());
+        }
+        return mapModel;
+    }
+
+    /*
+    * Update [points] of a specific account based on its [id]
+    * */
+    @RequestMapping(value = "/update-point", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> updatePointOfAccount(HttpServletRequest rq) {
+        Map<String, Object> mapModel = new HashMap<>();
+        JSONObject input = JSONHelper.readJSONObject(rq);
+        try{
+            accountDAO.updatePointsOfAccount(input.getInt("id"), input.getInt("points"));
+            mapModel.put("status", "success");
+        }catch (Exception e){
             mapModel.put("status", "failure");
             mapModel.put("reason", e.getMessage());
         }
