@@ -16,6 +16,7 @@ public class Account implements Serializable {
     private final Integer points;
     private final String address;
     private final String email;
+    private final Boolean colorBlind;
 
 
     public Integer getId() {
@@ -42,7 +43,7 @@ public class Account implements Serializable {
         return birth;
     }
 
-    public int getPoints() {
+    public Integer getPoints() {
         return points;
     }
 
@@ -54,23 +55,58 @@ public class Account implements Serializable {
         return email;
     }
 
-    // accountBuilder
+    public Boolean getColorBlind() {
+        return colorBlind;
+    }
+
+    /*
+    * AccountBuilder
+    * [username], [gender], [role] are required
+    * */
     public static class AccountBuilder {
-        private final Integer id;
-        private final String username;
-        private final String gender;
-        private final String role;
+        private String username;
+        private String gender;
+        private String role;
+        private Integer id;
         private String passwd;
         private Date birth;
         private Integer points;
         private String address;
         private String email;
+        private boolean colorBlind;
 
-        public AccountBuilder(int id, String username, String gender, String role) {
-            this.id = id;
+        public  AccountBuilder() {
+            this.username = null;
+            this.gender = null;
+            this.role = null;
+        }
+
+        public AccountBuilder(String username, String gender, String role) {
             this.username = username;
             this.gender = gender;
             this.role = role;
+        }
+        /*
+        * Must keep the setters of required fields for query turn back;
+        * */
+        public AccountBuilder setUsername(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public AccountBuilder setGender(String gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public AccountBuilder setRole (String role) {
+            this.role = role;
+            return this;
+        }
+
+        public AccountBuilder setId(int id) {
+            this.id = id;
+            return this;
         }
 
         public AccountBuilder setPasswd(String passwd) {
@@ -98,6 +134,11 @@ public class Account implements Serializable {
             return this;
         }
 
+        public AccountBuilder setColorBlind(boolean colorBlind) {
+            this.colorBlind = colorBlind;
+            return this;
+        }
+
         public Account build() {
             return new Account(this);
         }
@@ -113,5 +154,6 @@ public class Account implements Serializable {
         this.address = accountBuilder.address;
         this.email = accountBuilder.email;
         this.role = accountBuilder.role;
+        this.colorBlind = accountBuilder.colorBlind;
     }
 }
