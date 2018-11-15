@@ -7,12 +7,16 @@ public class Validator {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
 
-//    public static boolean isIdExisted(int id) {
-//
-//    }
+    private final String CHECK_ACCOUNT_BY_ID = "SELECT count(*) FROM Users " +
+                                               "WHERE " +
+                                               "id = ?";
+
+    public boolean isIdExisted(int id) {
+        return jdbcTemplate.queryForObject(CHECK_ACCOUNT_BY_ID, Integer.class, id) > 0;
+    }
 }

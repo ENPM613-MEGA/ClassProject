@@ -7,6 +7,7 @@ import java.util.Date;
 
 
 public class Account implements Serializable {
+
     private final Integer id;
     private final String username;
     private final String passwd;
@@ -22,41 +23,32 @@ public class Account implements Serializable {
     public Integer getId() {
         return id;
     }
-
     public String getUsername() {
         return username;
     }
-
     public String getPasswd() {
         return passwd;
     }
-
     public String getGender() {
         return gender;
     }
-
     public String getRole() {
         return role;
     }
-
     public Date getBirth() {
         return birth;
     }
-
     public Integer getPoints() {
         return points;
     }
-
+    public Boolean getColorBlind() {
+        return colorBlind;
+    }
     public String getAddress() {
         return address;
     }
-
     public String getEmail() {
         return email;
-    }
-
-    public Boolean getColorBlind() {
-        return colorBlind;
     }
 
     /*

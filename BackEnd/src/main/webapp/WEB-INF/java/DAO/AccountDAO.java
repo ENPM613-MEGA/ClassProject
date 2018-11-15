@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import utils.Validator;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -15,15 +16,22 @@ import java.util.Map;
 @Repository
 public class AccountDAO {
     private JdbcTemplate jdbcTemplate;
+    private Validator validator;
 
     @Autowired
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public final String GET_AN_ACCOUNT_SQL = "SELECT id, username, password, gender, role," +
+    @Autowired
+    public void setValidator(Validator validator) {this.validator = validator;}
+
+    private final String GET_AN_ACCOUNT_SQL = "SELECT id, username, password, gender, role," +
             "birth, points, addr, email, color_blind FROM Users WHERE username = ?";
 
+    /*
+    * Used for login
+    * */
     public Account getAccountByUsername(String username) {
         try {
             Account account = (Account) jdbcTemplate.queryForObject(GET_AN_ACCOUNT_SQL, new Object[]{username},
@@ -40,7 +48,7 @@ public class AccountDAO {
     }
 
 
-    public final String CREATE_NEW_ACCOUNT = "INSERT INTO Users " +
+    private final String CREATE_NEW_ACCOUNT = "INSERT INTO Users " +
                                             "(username, password, email, gender, birth, role, addr, points, color_blind)" +
                                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     /*
@@ -50,6 +58,7 @@ public class AccountDAO {
     public Account createNewAccount(Account account) {
 
         // Check username existence
+        // new account doesn't have id
         try {
             getAccountByUsername(account.getUsername());
             throw new RuntimeException("Username already exists!");
@@ -80,35 +89,55 @@ public class AccountDAO {
         }
     }
 
-    public final String UPDATE_ACCOUNT = "UPDATE Users " +
+    private final String UPDATE_ACCOUNT = "UPDATE Users " +
                                          "SET " +
-                                         "password = ?, email = ?, birth = ?, addr = ?, points = ?, color_blind = ? " +
+                                         "password = ?, email = ?, birth = ?, addr = ?, color_blind = ? " +
                                          "WHERE id = ?";
     /*
      * Update an existed account
      * only [passwd, email, birth, addr, colorBlind] can be updated
      * */
     public void updateAccount(Account account) {
-        //check account existence
-//        try {
-//            getAccountByUsername(account.getUsername());
-//        }catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            throw e;
-//        }
-        Object[] colums = new Object[7];
+
+        if (!validator.isIdExisted(account.getId())) {
+            throw new RuntimeException("user not exists!");
+        }
+
+        Object[] colums = new Object[6];
         colums[0] = account.getPasswd();
         colums[1] = account.getEmail();
         colums[2] = account.getBirth();
         colums[3] = account.getAddress();
-        colums[4] = account.getPoints();
-        colums[5] = account.getColorBlind();
-        colums[6] = account.getId();
+        colums[4] = account.getColorBlind();
+        colums[5] = account.getId();
         try {
             jdbcTemplate.update(UPDATE_ACCOUNT, colums);
             System.out.println("UPDATE success!");
         }catch (Exception e){
             System.out.println("UPDATE error!");
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+
+    private final String UPDATE_POINTS_BY_ACCOUNT = "UPDATE Users " +
+                                                   "SET " +
+                                                   "points = ? " +
+                                                   "WHERE id = ?";
+    /*
+    * Update the points of a specific user
+    * */
+    public void updatePointsOfAccount(int id, int point) {
+
+        if (!validator.isIdExisted(id)) {
+            throw new RuntimeException("user not exists!");
+        }
+
+        try{
+            jdbcTemplate.update(UPDATE_POINTS_BY_ACCOUNT, new Object[]{point, id});
+            System.out.println("UPDATE the points of account success!");
+        }catch (Exception e) {
+            System.out.println("UPDATE the points of account error!");
             System.out.println(e.getMessage());
             throw e;
         }
