@@ -142,4 +142,16 @@ public class AccountDAO {
             throw e;
         }
     }
+
+
+    private final String GET_ROLE_BY_UID = "SELECT role FROM Users " +
+                                           "WHERE id = ?";
+    public String getRoleByUid(int id) {
+        try {
+            return jdbcTemplate.queryForObject(GET_ROLE_BY_UID, new Object[]{id}, String.class);
+        }catch (Exception e) {
+            System.out.println("Can't get role by id!");
+        }
+        return null;
+    }
 }
