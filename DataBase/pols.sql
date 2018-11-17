@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 11, 2018 at 09:24 PM
+-- Generation Time: Nov 17, 2018 at 09:20 PM
 -- Server version: 5.7.21
 -- PHP Version: 7.2.7
 
@@ -21,9 +21,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `Assignments` (
-  `idAssignment` int(11) NOT NULL,
-  `Assignment name` varchar(45) NOT NULL,
-  `Upload date` datetime DEFAULT NULL
+  `id` int(11) NOT NULL,
+  `c_id` int(11) NOT NULL,
+  `path` varchar(45) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -33,36 +34,35 @@ CREATE TABLE `Assignments` (
 --
 
 CREATE TABLE `Classes` (
-  `idClass` int(11) NOT NULL,
-  `Class name` varchar(45) NOT NULL,
-  `Start date` date NOT NULL,
-  `End date` date NOT NULL,
-  `Syllabus_idSyllabus` int(11) NOT NULL
+  `id` int(11) NOT NULL,
+  `instructor_id` int(11) NOT NULL,
+  `class_name` varchar(45) NOT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `decription` varchar(512) DEFAULT NULL,
+  `syllabus` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `Classes`
+--
+
+INSERT INTO `Classes` (`id`, `instructor_id`, `class_name`, `start_date`, `end_date`, `decription`, `syllabus`) VALUES
+(1, 0, 'software engineering', '2017-02-04', '2018-02-03', 'Created by Frank', 'This is the syllabus');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Class_Video`
+-- Table structure for table `Documents`
 --
 
-CREATE TABLE `Class_Video` (
-  `Classes_idClass` int(11) NOT NULL,
-  `Videos_idVideo` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Files`
---
-
-CREATE TABLE `Files` (
-  `idFile` int(11) NOT NULL,
-  `File name` varchar(45) NOT NULL,
-  `Upload date` datetime NOT NULL,
-  `Classes_idClass` int(11) NOT NULL,
-  `Classes_Syllabus_idSyllabus` int(11) NOT NULL
+CREATE TABLE `Documents` (
+  `id` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `path` varchar(255) DEFAULT NULL,
+  `create_date` date DEFAULT NULL,
+  `create_person` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -72,23 +72,9 @@ CREATE TABLE `Files` (
 --
 
 CREATE TABLE `Grades` (
-  `idUser` int(11) NOT NULL,
-  `idAssignment` int(11) NOT NULL,
-  `Grade` int(11) DEFAULT NULL,
-  `Assignments_idAssignment` int(11) NOT NULL,
-  `Users_idUser` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Syllabus`
---
-
-CREATE TABLE `Syllabus` (
-  `idSyllabus` int(11) NOT NULL,
-  `Syllabus name` varchar(45) NOT NULL,
-  `Upload date` datetime NOT NULL
+  `u_id` int(11) NOT NULL,
+  `a_id` int(11) NOT NULL,
+  `grade` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -101,20 +87,25 @@ CREATE TABLE `Users` (
   `id` int(11) NOT NULL,
   `username` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
-  `email` varchar(45) NOT NULL,
+  `email` varchar(45) DEFAULT NULL,
   `gender` varchar(6) DEFAULT 'male',
   `birth` date DEFAULT NULL,
   `role` varchar(10) NOT NULL DEFAULT 'student',
   `addr` varchar(45) DEFAULT NULL,
-  `points` int(11) NOT NULL
+  `points` int(11) NOT NULL DEFAULT '0',
+  `color_blind` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `Users`
 --
 
-INSERT INTO `Users` (`id`, `username`, `password`, `email`, `gender`, `birth`, `role`, `addr`, `points`) VALUES
-(1, 'frank', '940205', 'frank.yuhaonan@gmail.com', 'male', '1994-02-05', 'student', NULL, 0);
+INSERT INTO `Users` (`id`, `username`, `password`, `email`, `gender`, `birth`, `role`, `addr`, `points`, `color_blind`) VALUES
+(1, 'frank', '1111', 'frank.yu@gmail.com', 'male', NULL, 'student', '5304 Smiths Cove Ln', 100, 1),
+(2, 'aaa', '122', NULL, 'male', NULL, 'student', NULL, 10, 0),
+(12, 'Haonan Yu', '940205', NULL, 'male', NULL, 'student', NULL, 0, 0),
+(13, 'Haonan', '940205', NULL, 'male', NULL, 'instuctor', NULL, 0, 0),
+(14, 'Hao', '940205', NULL, 'male', NULL, 'instuctor', NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -123,22 +114,16 @@ INSERT INTO `Users` (`id`, `username`, `password`, `email`, `gender`, `birth`, `
 --
 
 CREATE TABLE `User_Class` (
-  `Users_idUser` int(11) NOT NULL,
-  `Classes_idClass` int(11) NOT NULL
+  `u_id` int(11) NOT NULL,
+  `c_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `Videos`
+-- Dumping data for table `User_Class`
 --
 
-CREATE TABLE `Videos` (
-  `idVideo` int(11) NOT NULL,
-  `Video name` varchar(45) NOT NULL,
-  `Upload date` datetime NOT NULL,
-  `Youtube url` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `User_Class` (`u_id`, `c_id`) VALUES
+(1, 1);
 
 --
 -- Indexes for dumped tables
@@ -148,42 +133,27 @@ CREATE TABLE `Videos` (
 -- Indexes for table `Assignments`
 --
 ALTER TABLE `Assignments`
-  ADD PRIMARY KEY (`idAssignment`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_assignment_class` (`c_id`);
 
 --
 -- Indexes for table `Classes`
 --
 ALTER TABLE `Classes`
-  ADD PRIMARY KEY (`idClass`,`Syllabus_idSyllabus`),
-  ADD KEY `fk_Classes_Syllabus1` (`Syllabus_idSyllabus`);
+  ADD PRIMARY KEY (`id`) USING BTREE;
 
 --
--- Indexes for table `Class_Video`
+-- Indexes for table `Documents`
 --
-ALTER TABLE `Class_Video`
-  ADD PRIMARY KEY (`Classes_idClass`,`Videos_idVideo`),
-  ADD KEY `fk_Classes_has_Videos_Videos1` (`Videos_idVideo`);
-
---
--- Indexes for table `Files`
---
-ALTER TABLE `Files`
-  ADD PRIMARY KEY (`idFile`,`Classes_idClass`,`Classes_Syllabus_idSyllabus`),
-  ADD KEY `fk_Files_Classes1` (`Classes_idClass`,`Classes_Syllabus_idSyllabus`);
+ALTER TABLE `Documents`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `Grades`
 --
 ALTER TABLE `Grades`
-  ADD PRIMARY KEY (`idUser`,`idAssignment`,`Assignments_idAssignment`,`Users_idUser`),
-  ADD KEY `fk_Grades_Assignments1` (`Assignments_idAssignment`),
-  ADD KEY `fk_Grades_Users1` (`Users_idUser`);
-
---
--- Indexes for table `Syllabus`
---
-ALTER TABLE `Syllabus`
-  ADD PRIMARY KEY (`idSyllabus`);
+  ADD PRIMARY KEY (`u_id`,`a_id`),
+  ADD KEY `fk_grade_assignment` (`a_id`);
 
 --
 -- Indexes for table `Users`
@@ -195,59 +165,57 @@ ALTER TABLE `Users`
 -- Indexes for table `User_Class`
 --
 ALTER TABLE `User_Class`
-  ADD PRIMARY KEY (`Users_idUser`,`Classes_idClass`),
-  ADD KEY `fk_Users_has_Classes_Classes1` (`Classes_idClass`);
-
---
--- Indexes for table `Videos`
---
-ALTER TABLE `Videos`
-  ADD PRIMARY KEY (`idVideo`);
+  ADD PRIMARY KEY (`u_id`,`c_id`),
+  ADD KEY `fk_class` (`c_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
+-- AUTO_INCREMENT for table `Assignments`
+--
+ALTER TABLE `Assignments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `Classes`
+--
+ALTER TABLE `Classes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `Documents`
+--
+ALTER TABLE `Documents`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `Users`
 --
 ALTER TABLE `Users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `Classes`
+-- Constraints for table `Assignments`
 --
-ALTER TABLE `Classes`
-  ADD CONSTRAINT `fk_Classes_Syllabus1` FOREIGN KEY (`Syllabus_idSyllabus`) REFERENCES `Syllabus` (`idSyllabus`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `Class_Video`
---
-ALTER TABLE `Class_Video`
-  ADD CONSTRAINT `fk_Classes_has_Videos_Classes1` FOREIGN KEY (`Classes_idClass`) REFERENCES `Classes` (`idClass`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Classes_has_Videos_Videos1` FOREIGN KEY (`Videos_idVideo`) REFERENCES `Videos` (`idVideo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `Files`
---
-ALTER TABLE `Files`
-  ADD CONSTRAINT `fk_Files_Classes1` FOREIGN KEY (`Classes_idClass`,`Classes_Syllabus_idSyllabus`) REFERENCES `Classes` (`idClass`, `Syllabus_idSyllabus`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `Assignments`
+  ADD CONSTRAINT `fk_assignment_class` FOREIGN KEY (`c_id`) REFERENCES `Classes` (`id`);
 
 --
 -- Constraints for table `Grades`
 --
 ALTER TABLE `Grades`
-  ADD CONSTRAINT `fk_Grades_Assignments1` FOREIGN KEY (`Assignments_idAssignment`) REFERENCES `Assignments` (`idAssignment`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Grades_Users1` FOREIGN KEY (`Users_idUser`) REFERENCES `Users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_grade_assignment` FOREIGN KEY (`a_id`) REFERENCES `Assignments` (`id`),
+  ADD CONSTRAINT `fk_grade_user` FOREIGN KEY (`u_id`) REFERENCES `Users` (`id`);
 
 --
 -- Constraints for table `User_Class`
 --
 ALTER TABLE `User_Class`
-  ADD CONSTRAINT `fk_Users_has_Classes_Classes1` FOREIGN KEY (`Classes_idClass`) REFERENCES `Classes` (`idClass`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Users_has_Classes_Users` FOREIGN KEY (`Users_idUser`) REFERENCES `Users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
+  ADD CONSTRAINT `fk_class` FOREIGN KEY (`c_id`) REFERENCES `Classes` (`id`),
+  ADD CONSTRAINT `fk_user` FOREIGN KEY (`u_id`) REFERENCES `Users` (`id`);
