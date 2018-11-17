@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 17, 2018 at 09:20 PM
+-- Generation Time: Nov 17, 2018 at 11:10 PM
 -- Server version: 5.7.21
 -- PHP Version: 7.2.7
 
@@ -58,12 +58,20 @@ INSERT INTO `Classes` (`id`, `instructor_id`, `class_name`, `start_date`, `end_d
 
 CREATE TABLE `Documents` (
   `id` int(11) NOT NULL,
+  `c_id` int(11) NOT NULL,
   `filename` varchar(255) NOT NULL,
   `type` varchar(10) NOT NULL,
   `path` varchar(255) DEFAULT NULL,
   `create_date` date DEFAULT NULL,
   `create_person` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `Documents`
+--
+
+INSERT INTO `Documents` (`id`, `c_id`, `filename`, `type`, `path`, `create_date`, `create_person`) VALUES
+(1, 1, 'Background Interview CheatSheet.docx', 'syllabus', '/Users/frankyu/WorkSpace/Projects/POLS/ClassProject/BackEnd/target/POLS/WEB-INF/upload/Background Interview CheatSheet.docx', '2018-11-17', 'Frank Yu');
 
 -- --------------------------------------------------------
 
@@ -146,7 +154,8 @@ ALTER TABLE `Classes`
 -- Indexes for table `Documents`
 --
 ALTER TABLE `Documents`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_document_class` (`c_id`);
 
 --
 -- Indexes for table `Grades`
@@ -188,7 +197,7 @@ ALTER TABLE `Classes`
 -- AUTO_INCREMENT for table `Documents`
 --
 ALTER TABLE `Documents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `Users`
@@ -207,6 +216,12 @@ ALTER TABLE `Assignments`
   ADD CONSTRAINT `fk_assignment_class` FOREIGN KEY (`c_id`) REFERENCES `Classes` (`id`);
 
 --
+-- Constraints for table `Documents`
+--
+ALTER TABLE `Documents`
+  ADD CONSTRAINT `fk_document_class` FOREIGN KEY (`c_id`) REFERENCES `Classes` (`id`);
+
+--
 -- Constraints for table `Grades`
 --
 ALTER TABLE `Grades`
@@ -219,3 +234,4 @@ ALTER TABLE `Grades`
 ALTER TABLE `User_Class`
   ADD CONSTRAINT `fk_class` FOREIGN KEY (`c_id`) REFERENCES `Classes` (`id`),
   ADD CONSTRAINT `fk_user` FOREIGN KEY (`u_id`) REFERENCES `Users` (`id`);
+
