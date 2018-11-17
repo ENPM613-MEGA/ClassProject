@@ -30,4 +30,10 @@
 
     <bean id="validator" class="utils.Validator"/>
     <bean id="jsonHelper" class="utils.JSONHelper"/>
+
+
+    <!--file upload bean-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSizePerFile" value="2000000"/>
+    </bean>
 </beans>

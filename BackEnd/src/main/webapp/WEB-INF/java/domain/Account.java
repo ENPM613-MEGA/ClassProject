@@ -67,11 +67,7 @@ public class Account implements Serializable {
         private String email;
         private boolean colorBlind;
 
-        public  AccountBuilder() {
-            this.username = null;
-            this.gender = null;
-            this.role = null;
-        }
+        public  AccountBuilder() {}
 
         public AccountBuilder(String username, String gender, String role) {
             this.username = username;

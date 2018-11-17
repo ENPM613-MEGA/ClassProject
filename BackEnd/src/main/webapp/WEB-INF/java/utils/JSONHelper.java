@@ -8,6 +8,9 @@ import java.io.BufferedReader;
 
 public class JSONHelper {
 
+    /*
+    * Transform a json format request to an JSON object
+    * */
     public static JSONObject readJSONObject(HttpServletRequest request) {
         StringBuilder sBuilder = new StringBuilder();
         try(BufferedReader reader = request.getReader()) {
@@ -22,4 +25,5 @@ public class JSONHelper {
 
         return new JSONObject();
     }
+
 }
