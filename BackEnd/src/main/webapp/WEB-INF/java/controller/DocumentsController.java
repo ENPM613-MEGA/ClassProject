@@ -29,7 +29,9 @@ public class DocumentsController {
     @Autowired
     public void setDocumentDAO(DocumentDAO documentDAO) {this.documentDAO = documentDAO;}
 
-
+/*
+*   upload a file to fileSystem, the request should include the file, userId, and classId
+* */
     @RequestMapping(value = "/uploadfile", method = RequestMethod.POST)
     public Map<String, Object> uploadFile(@RequestParam MultipartFile file, HttpServletRequest request) {
 
@@ -102,4 +104,6 @@ public class DocumentsController {
     return mapModel;
     }
 
+
+    
 }
