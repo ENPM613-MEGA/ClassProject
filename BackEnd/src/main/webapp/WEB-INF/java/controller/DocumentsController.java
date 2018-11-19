@@ -94,14 +94,7 @@ public class DocumentsController {
 
         try{
             FileUtils.copyInputStreamToFile(file.getInputStream(), newfile);
-            if(newfile.createNewFile()) {
-                System.out.println("Create File" + destFileName + " Success!");
-                mapModel.put("status", "success");
-            }else {
-                errorMessage += "Create File" + destFileName + " Fail!";
-                System.out.println(errorMessage);
-                return POLSHelper.failureReturnConstructor(errorMessage);
-            }
+            mapModel.put("status", "success");
         }catch (Exception e) {
             e.printStackTrace();
             mapModel = POLSHelper.failureReturnConstructor(e.getMessage());

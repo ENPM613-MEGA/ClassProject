@@ -37,7 +37,7 @@ public class Validator {
 
     private final String CHECK_USER_BELONG_CLASS = "SELECT count(*) FROM User_Class " +
                                                    "WHERE " +
-                                                   "uId = ? AND cId = ?";
+                                                   "u_id = ? AND c_id = ?";
 
     /*
     * Check if a user is member of a class
