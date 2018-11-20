@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 17, 2018 at 11:10 PM
+-- Generation Time: Nov 20, 2018 at 07:59 PM
 -- Server version: 5.7.21
 -- PHP Version: 7.2.7
 
@@ -23,8 +23,11 @@ SET time_zone = "+00:00";
 CREATE TABLE `Assignments` (
   `id` int(11) NOT NULL,
   `c_id` int(11) NOT NULL,
+  `ass_name` varchar(255) NOT NULL,
   `path` varchar(45) DEFAULT NULL,
-  `create_date` datetime DEFAULT NULL
+  `create_date` datetime DEFAULT NULL,
+  `due_date` date NOT NULL,
+  `publish` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -48,7 +51,7 @@ CREATE TABLE `Classes` (
 --
 
 INSERT INTO `Classes` (`id`, `instructor_id`, `class_name`, `start_date`, `end_date`, `decription`, `syllabus`) VALUES
-(1, 0, 'software engineering', '2017-02-04', '2018-02-03', 'Created by Frank', 'This is the syllabus');
+(1, 1, 'software engineering', '2017-02-04', '2018-02-03', 'Created by Frank', 'This is the syllabus');
 
 -- --------------------------------------------------------
 
@@ -63,15 +66,15 @@ CREATE TABLE `Documents` (
   `type` varchar(10) NOT NULL,
   `path` varchar(255) DEFAULT NULL,
   `create_date` date DEFAULT NULL,
-  `create_person` varchar(255) DEFAULT NULL
+  `publish` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `Documents`
 --
 
-INSERT INTO `Documents` (`id`, `c_id`, `filename`, `type`, `path`, `create_date`, `create_person`) VALUES
-(1, 1, 'Background Interview CheatSheet.docx', 'syllabus', '/Users/frankyu/WorkSpace/Projects/POLS/ClassProject/BackEnd/target/POLS/WEB-INF/upload/Background Interview CheatSheet.docx', '2018-11-17', 'Frank Yu');
+INSERT INTO `Documents` (`id`, `c_id`, `filename`, `type`, `path`, `create_date`, `publish`) VALUES
+(5, 1, 'Music', 'video', 'http://wj98127.iteye.com/blog/360644', '2018-11-20', 1);
 
 -- --------------------------------------------------------
 
@@ -109,11 +112,12 @@ CREATE TABLE `Users` (
 --
 
 INSERT INTO `Users` (`id`, `username`, `password`, `email`, `gender`, `birth`, `role`, `addr`, `points`, `color_blind`) VALUES
-(1, 'frank', '1111', 'frank.yu@gmail.com', 'male', NULL, 'student', '5304 Smiths Cove Ln', 100, 1),
+(1, 'frank', '1111', 'frank.yu@gmail.com', 'male', NULL, 'instructor', '5304 Smiths Cove Ln', 100, 1),
 (2, 'aaa', '122', NULL, 'male', NULL, 'student', NULL, 10, 0),
 (12, 'Haonan Yu', '940205', NULL, 'male', NULL, 'student', NULL, 0, 0),
 (13, 'Haonan', '940205', NULL, 'male', NULL, 'instuctor', NULL, 0, 0),
-(14, 'Hao', '940205', NULL, 'male', NULL, 'instuctor', NULL, 0, 0);
+(14, 'Hao', '940205', NULL, 'male', NULL, 'instuctor', NULL, 0, 0),
+(15, 'MQ', '940205', NULL, 'male', NULL, 'instuctor', NULL, 100, 0);
 
 -- --------------------------------------------------------
 
@@ -155,7 +159,7 @@ ALTER TABLE `Classes`
 --
 ALTER TABLE `Documents`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_document_class` (`c_id`);
+  ADD UNIQUE KEY `fileAndClass_unique` (`c_id`,`filename`);
 
 --
 -- Indexes for table `Grades`
@@ -197,13 +201,13 @@ ALTER TABLE `Classes`
 -- AUTO_INCREMENT for table `Documents`
 --
 ALTER TABLE `Documents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `Users`
 --
 ALTER TABLE `Users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables

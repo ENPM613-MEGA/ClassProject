@@ -1,5 +1,7 @@
 package utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,4 +19,11 @@ public class POLSHelper {
         failureReturn.put("reason", reason);
         return failureReturn;
     }
+
+    public static String getCurDate() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        return df.format(new Date()).toString();
+    }
+
+
 }

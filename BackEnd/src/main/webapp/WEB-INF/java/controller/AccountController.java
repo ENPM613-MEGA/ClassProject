@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import utils.JSONHelper;
 import utils.POLSHelper;
+import utils.Validator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -19,6 +20,10 @@ import java.util.Map;
 @RequestMapping("/account")
 public class AccountController {
     private AccountDAO accountDAO;
+    private Validator validator;
+
+    @Autowired
+    public void setValidator(Validator validator) {this.validator = validator;}
 
     @Autowired
     public void setAccountDAO(AccountDAO accountDAO) {
@@ -60,8 +65,20 @@ public class AccountController {
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> registerNewAccount(@RequestBody Account.AccountBuilder accountBuilder) {
         Map<String, Object> mapModel = new HashMap<>();
+        Account account = accountBuilder.build();
+
+        // Check username existence
+        // new account doesn't have id
+        try {
+            accountDAO.getAccountByUsername(account.getUsername());
+            return POLSHelper.failureReturnConstructor("username already exists!");
+        }catch (EmptyResultDataAccessException e) {
+            // if username not exist, continue the process
+        }catch (Exception e) {
+            return POLSHelper.failureReturnConstructor(e.getMessage());
+        }
+
         try{
-            Account account = accountBuilder.build();
             Account newAccount = accountDAO.createNewAccount(account);
             mapModel.put("status", "success");
             mapModel.put("userProfile", newAccount);
@@ -78,8 +95,15 @@ public class AccountController {
     @RequestMapping(value = "/update-account", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> updateAccount(@RequestBody Account.AccountBuilder accountBuilder) {
         Map<String, Object> mapModel = new HashMap<>();
+        Account account = accountBuilder.build();
+
+        //check user exists
+        if (!validator.isIdExisted(account.getId())) {
+            return POLSHelper.failureReturnConstructor("user not exists!");
+        }
+
         try{
-            Account account = accountBuilder.build();
+
             accountDAO.updateAccount(account);
             mapModel.put("status", "success");
         }catch (Exception e) {
@@ -95,6 +119,11 @@ public class AccountController {
     public Map<String, Object> updatePointOfAccount(HttpServletRequest rq) {
         Map<String, Object> mapModel = new HashMap<>();
         JSONObject input = JSONHelper.readJSONObject(rq);
+
+        if (!validator.isIdExisted(input.getInt("id"))) {
+            return POLSHelper.failureReturnConstructor("user not exists!");
+        }
+
         try{
             accountDAO.updatePointsOfAccount(input.getInt("id"), input.getInt("points"));
             mapModel.put("status", "success");
