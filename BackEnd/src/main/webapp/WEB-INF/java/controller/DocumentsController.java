@@ -34,15 +34,19 @@ public class DocumentsController {
     public void setDocumentDAO(DocumentDAO documentDAO) {this.documentDAO = documentDAO;}
 
     /*
-    *   upload a file to fileSystem, the request should include the file, userId, and classId
+    *   upload a file to fileSystem, the request should include [file, userId, classId, type, (publish)]
     * */
-    @RequestMapping(value = "/uploadfile", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload-file", method = RequestMethod.POST)
     public Map<String, Object> uploadFile(@RequestParam MultipartFile file, HttpServletRequest request) {
 
         Map<String, Object> mapModel = new HashMap<>();
         Integer cId = null;
         Integer uId = null;
         String type = request.getParameter("type");
+        Boolean publish = true; //default
+        if (request.getParameter("publish") != null) {
+            publish = request.getParameter("publish").toLowerCase().equals("true");
+        }
         String errorMessage = "ERROR: ";
 
         // check input valid
@@ -71,8 +75,6 @@ public class DocumentsController {
         System.out.println("文件名称: " + file.getName());
         System.out.println("文件原名: " + file.getOriginalFilename());
         System.out.println("===================");
-
-
 
         String realPath = request.getSession().getServletContext().getRealPath("/WEB-INF/upload");
         String destFileName = realPath + "/" + cId + "/" + file.getOriginalFilename();
@@ -104,14 +106,19 @@ public class DocumentsController {
             }
         }
 
-        try{
-            FileUtils.copyInputStreamToFile(file.getInputStream(), newfile);
+        if (type.toLowerCase().equals("syllabus") && !validator.isSyllabusUnique(cId)) {
+            //TODO: handle the unique syllabus problem
+        }
 
+        try{
             //insert to db
             Document.DocumentBuilder documentBuilder = new Document.DocumentBuilder(cId, file.getOriginalFilename(), type);
             documentBuilder.setPath(destFileName);
             documentBuilder.setCreateDate(new Date());
+            documentBuilder.setPublish(publish);
             documentDAO.createNewDocument(documentBuilder.build());
+
+            FileUtils.copyInputStreamToFile(file.getInputStream(), newfile);
             mapModel.put("status", "success");
         }catch (Exception e) {
             e.printStackTrace();
@@ -120,6 +127,50 @@ public class DocumentsController {
     return mapModel;
     }
 
+    /*
+    *  upload a video, the request should include [userId, classId, filename, url]
+    * */
+    @RequestMapping(value = "/upload-video", method = RequestMethod.POST)
+    public Map<String, Object> uploadVideo(HttpServletRequest request) {
+        Map<String, Object> mapModel = new HashMap<>();
+        Integer cId = null;
+        Integer uId = null;
+        String type = "video"; // static
+        String videoName = request.getParameter("videoname");
+        String path = request.getParameter("url");
+        String errorMessage = "ERROR: ";
 
+        if (path == null || videoName == null) {
+            return POLSHelper.failureReturnConstructor("url and video name are required!");
+        }
 
+        // check input valid
+        try {
+            cId = Integer.valueOf(request.getParameter("cId"));
+            uId = Integer.valueOf(request.getParameter("uId"));
+        }catch (Exception e) {
+            e.printStackTrace();
+            errorMessage += "classId or userId not included !";
+            return POLSHelper.failureReturnConstructor(errorMessage);
+        }
+
+        // check user privilege
+        if (!validator.isIntructor(uId) || !validator.isMemberOfClass(uId, cId)) {
+            errorMessage += "Invalid upload, user do not have the privilige to upload this file!";
+            System.out.println(errorMessage);
+            return POLSHelper.failureReturnConstructor(errorMessage);
+        }
+
+        try {
+            Document.DocumentBuilder documentBuilder = new Document.DocumentBuilder(cId, videoName, type);
+            documentBuilder.setPath(path);
+            documentBuilder.setCreateDate(new Date());
+            documentDAO.createNewDocument(documentBuilder.build());
+            mapModel.put("status", "success");
+        }catch (Exception e) {
+            e.printStackTrace();
+            mapModel = POLSHelper.failureReturnConstructor(e.getMessage());
+        }
+        return mapModel;
+    }
 }

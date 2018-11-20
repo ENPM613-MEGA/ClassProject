@@ -56,4 +56,9 @@ public class Validator {
         String str = type.toLowerCase();
         return str.equals("syllabus") || str.equals("file") || str.equals("video");
     }
+
+    public boolean isSyllabusUnique(int cId) {
+        //TODO: if there is no syllabus in the course, return true
+        return true;
+    }
 }

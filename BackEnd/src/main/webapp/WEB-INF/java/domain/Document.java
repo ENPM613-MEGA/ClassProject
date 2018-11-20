@@ -9,6 +9,7 @@ public class Document {
     private String type;
     private String path;
     private Date createDate;
+    private Boolean publish;
 
     public Integer getId() {
         return id;
@@ -34,6 +35,10 @@ public class Document {
         return createDate;
     }
 
+    public Boolean getPublish() {
+        return publish;
+    }
+
     public static class DocumentBuilder{
         private Integer id;
         private Integer classId;
@@ -41,6 +46,7 @@ public class Document {
         private String type;
         private String path;
         private Date createDate;
+        private Boolean publish;
 
         public DocumentBuilder(Integer classId, String filename, String type) {
             this.classId = classId;
@@ -78,6 +84,11 @@ public class Document {
             return this;
         }
 
+        public DocumentBuilder setPublish(Boolean publish) {
+            this.publish = publish;
+            return this;
+        }
+
         public Document build() {
             return new Document(this);
         }
@@ -90,5 +101,7 @@ public class Document {
         this.type = documentBuilder.type;
         this.path = documentBuilder.path;
         this.createDate = documentBuilder.createDate;
+        this.publish = documentBuilder.publish;
     }
+
 }
