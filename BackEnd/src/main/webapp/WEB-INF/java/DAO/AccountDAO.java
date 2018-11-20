@@ -13,6 +13,11 @@ import utils.Validator;
 import java.util.ArrayList;
 import java.util.Map;
 
+
+/*
+* Serve the communication between server and database of all the Account business logic
+* All the serviec provided in DAO level are atomic, the validation should be done at Controller level
+* */
 @Repository
 public class AccountDAO {
     private JdbcTemplate jdbcTemplate;
@@ -57,30 +62,18 @@ public class AccountDAO {
     * */
     public Account createNewAccount(Account account) {
 
-        // Check username existence
-        // new account doesn't have id
+        Object[] inputs = new Object[9];
+        inputs[0] = account.getUsername();
+        inputs[1] = account.getPasswd();
+        inputs[2] = account.getEmail();
+        inputs[3] = account.getGender();
+        inputs[4] = account.getBirth();
+        inputs[5] = account.getRole();
+        inputs[6] = account.getAddress();
+        inputs[7] = account.getPoints() == null ? 0 : account.getPoints(); // default 0
+        inputs[8] = account.getColorBlind() == null ? false : account.getColorBlind(); // default 0
         try {
-            getAccountByUsername(account.getUsername());
-            throw new RuntimeException("Username already exists!");
-        }catch (EmptyResultDataAccessException e) {
-            // if username not exist, continue the process
-        }catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw e;
-        }
-
-        Object[] colums = new Object[9];
-        colums[0] = account.getUsername();
-        colums[1] = account.getPasswd();
-        colums[2] = account.getEmail();
-        colums[3] = account.getGender();
-        colums[4] = account.getBirth();
-        colums[5] = account.getRole();
-        colums[6] = account.getAddress();
-        colums[7] = account.getPoints() == null ? 0 : account.getPoints(); // default 0
-        colums[8] = account.getColorBlind() == null ? false : account.getColorBlind(); // default 0
-        try {
-            jdbcTemplate.update(CREATE_NEW_ACCOUNT, colums);
+            jdbcTemplate.update(CREATE_NEW_ACCOUNT, inputs);
             System.out.println("INSERT success!");
             return getAccountByUsername(account.getUsername());
         }catch (Exception e){
@@ -99,19 +92,16 @@ public class AccountDAO {
      * */
     public void updateAccount(Account account) {
 
-        if (!validator.isIdExisted(account.getId())) {
-            throw new RuntimeException("user not exists!");
-        }
 
-        Object[] colums = new Object[6];
-        colums[0] = account.getPasswd();
-        colums[1] = account.getEmail();
-        colums[2] = account.getBirth();
-        colums[3] = account.getAddress();
-        colums[4] = account.getColorBlind();
-        colums[5] = account.getId();
+        Object[] inputs = new Object[6];
+        inputs[0] = account.getPasswd();
+        inputs[1] = account.getEmail();
+        inputs[2] = account.getBirth();
+        inputs[3] = account.getAddress();
+        inputs[4] = account.getColorBlind();
+        inputs[5] = account.getId();
         try {
-            jdbcTemplate.update(UPDATE_ACCOUNT, colums);
+            jdbcTemplate.update(UPDATE_ACCOUNT, inputs);
             System.out.println("UPDATE success!");
         }catch (Exception e){
             System.out.println("UPDATE error!");
@@ -129,10 +119,6 @@ public class AccountDAO {
     * */
     public void updatePointsOfAccount(int id, int point) {
 
-        if (!validator.isIdExisted(id)) {
-            throw new RuntimeException("user not exists!");
-        }
-
         try{
             jdbcTemplate.update(UPDATE_POINTS_BY_ACCOUNT, new Object[]{point, id});
             System.out.println("UPDATE the points of account success!");
@@ -146,6 +132,9 @@ public class AccountDAO {
 
     private final String GET_ROLE_BY_UID = "SELECT role FROM Users " +
                                            "WHERE id = ?";
+    /*
+    * Get the role attribute by userId
+    * */
     public String getRoleByUid(int id) {
         try {
             return jdbcTemplate.queryForObject(GET_ROLE_BY_UID, new Object[]{id}, String.class);

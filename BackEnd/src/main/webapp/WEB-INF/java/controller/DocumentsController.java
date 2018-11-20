@@ -2,6 +2,7 @@ package controller;
 
 
 import DAO.DocumentDAO;
+import domain.Document;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,11 +10,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import utils.JSONHelper;
 import utils.POLSHelper;
 import utils.Validator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,18 +33,22 @@ public class DocumentsController {
     @Autowired
     public void setDocumentDAO(DocumentDAO documentDAO) {this.documentDAO = documentDAO;}
 
-/*
-*   upload a file to fileSystem, the request should include the file, userId, and classId
-* */
+    /*
+    *   upload a file to fileSystem, the request should include the file, userId, and classId
+    * */
     @RequestMapping(value = "/uploadfile", method = RequestMethod.POST)
     public Map<String, Object> uploadFile(@RequestParam MultipartFile file, HttpServletRequest request) {
 
         Map<String, Object> mapModel = new HashMap<>();
         Integer cId = null;
         Integer uId = null;
+        String type = request.getParameter("type");
         String errorMessage = "ERROR: ";
 
         // check input valid
+        if (type == null || !validator.isFileTypeValid(type)) {
+            return POLSHelper.failureReturnConstructor("type not valid!");
+        }
         try {
              cId = Integer.valueOf(request.getParameter("cId"));
              uId = Integer.valueOf(request.getParameter("uId"));
@@ -63,6 +71,8 @@ public class DocumentsController {
         System.out.println("文件名称: " + file.getName());
         System.out.println("文件原名: " + file.getOriginalFilename());
         System.out.println("===================");
+
+
 
         String realPath = request.getSession().getServletContext().getRealPath("/WEB-INF/upload");
         String destFileName = realPath + "/" + cId + "/" + file.getOriginalFilename();
@@ -96,6 +106,12 @@ public class DocumentsController {
 
         try{
             FileUtils.copyInputStreamToFile(file.getInputStream(), newfile);
+
+            //insert to db
+            Document.DocumentBuilder documentBuilder = new Document.DocumentBuilder(cId, file.getOriginalFilename(), type);
+            documentBuilder.setPath(destFileName);
+            documentBuilder.setCreateDate(new Date());
+            documentDAO.createNewDocument(documentBuilder.build());
             mapModel.put("status", "success");
         }catch (Exception e) {
             e.printStackTrace();
@@ -105,5 +121,5 @@ public class DocumentsController {
     }
 
 
-    
+
 }
