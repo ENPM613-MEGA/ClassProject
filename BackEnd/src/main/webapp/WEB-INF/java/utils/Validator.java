@@ -61,4 +61,9 @@ public class Validator {
         //TODO: if there is no syllabus in the course, return true
         return true;
     }
+
+    public boolean isTokenValid(int uId, String token) {
+        //TODO: check the token
+        return true;
+    }
 }

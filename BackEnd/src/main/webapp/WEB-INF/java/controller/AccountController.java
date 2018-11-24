@@ -32,10 +32,10 @@ public class AccountController {
 
     /*login -frank
     *
-    * take the [username] and [passwd] as parameters,
+    * take the [username, passwd] as parameters,
     * query for the account info by the username, and compare the passwd
     * */
-    @RequestMapping(value = "/login/{username}/{passwd}", method = RequestMethod.GET)
+    @RequestMapping(value = "/login/{username}&{passwd}", method = RequestMethod.GET)
     public Map<String, Object> login(@PathVariable String username, @PathVariable String passwd) {
         Map<String, Object> mapModel = new HashMap<>();
 
@@ -43,6 +43,7 @@ public class AccountController {
             Account account = accountDAO.getAccountByUsername(username);
             if (account.getPasswd().equals(passwd)) {
                 mapModel.put("status", "success");
+                mapModel.put("token", POLSHelper.generateToken());
                 mapModel.put("userProfile", account);
                 //TODO: add userCourses
                 //TODO: add userAssignments
@@ -60,16 +61,14 @@ public class AccountController {
 
     /*
     * register a new account
-    * the [username] [passwd] [gender] [role] are required
+    * the [username, passwd, gender, role] are required
     * */
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> registerNewAccount(@RequestBody Account.AccountBuilder accountBuilder) {
         Map<String, Object> mapModel = new HashMap<>();
         Account account = accountBuilder.build();
 
-        // Check username existence
-        // new account doesn't have id
-        try {
+        try {// Check username existence
             accountDAO.getAccountByUsername(account.getUsername());
             return POLSHelper.failureReturnConstructor("username already exists!");
         }catch (EmptyResultDataAccessException e) {
@@ -80,6 +79,7 @@ public class AccountController {
 
         try{
             Account newAccount = accountDAO.createNewAccount(account);
+            mapModel.put("token", POLSHelper.generateToken());
             mapModel.put("status", "success");
             mapModel.put("userProfile", newAccount);
         }catch (Exception e) {
@@ -93,17 +93,28 @@ public class AccountController {
     * Overwrite the original account data
     * */
     @RequestMapping(value = "/update-account", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> updateAccount(@RequestBody Account.AccountBuilder accountBuilder) {
+    public Map<String, Object> updateAccount(HttpServletRequest request) {
         Map<String, Object> mapModel = new HashMap<>();
-        Account account = accountBuilder.build();
+        JSONObject input = JSONHelper.readJSONObject(request);
 
-        //check user exists
-        if (!validator.isIdExisted(account.getId())) {
+        if (input.getString("token") == null ||
+                !validator.isTokenValid(input.getInt("id"), input.getString("token"))) {//check token
+            return POLSHelper.failureReturnConstructor("token not match to user!");
+        }
+
+        //build account object
+        Account account = new Account.AccountBuilder().setId(input.getInt("id"))
+                                                      .setPasswd(input.getString("passwd"))
+                                                      .setEmail(input.getString("email"))
+                                                      .setAddress(input.getString("address"))
+                                                      .setColorBlind(input.getBoolean("colorBlind"))
+                                                      .build();
+
+        if (!validator.isIdExisted(account.getId())) {//check user exists
             return POLSHelper.failureReturnConstructor("user not exists!");
         }
 
         try{
-
             accountDAO.updateAccount(account);
             mapModel.put("status", "success");
         }catch (Exception e) {
@@ -119,17 +130,24 @@ public class AccountController {
     public Map<String, Object> updatePointOfAccount(HttpServletRequest rq) {
         Map<String, Object> mapModel = new HashMap<>();
         JSONObject input = JSONHelper.readJSONObject(rq);
+        int id = input.getInt("id");
 
-        if (!validator.isIdExisted(input.getInt("id"))) {
+        if (input.getString("token") == null ||
+                !validator.isTokenValid(id, input.getString("token"))) {// check token
+            return POLSHelper.failureReturnConstructor("token not match to user!");
+        }
+
+        if (!validator.isIdExisted(id)) {// check account existence
             return POLSHelper.failureReturnConstructor("user not exists!");
         }
 
         try{
-            accountDAO.updatePointsOfAccount(input.getInt("id"), input.getInt("points"));
+            accountDAO.updatePointsOfAccount(id, input.getInt("points"));
             mapModel.put("status", "success");
         }catch (Exception e){
             mapModel = POLSHelper.failureReturnConstructor(e.getMessage());
         }
         return mapModel;
     }
+
 }

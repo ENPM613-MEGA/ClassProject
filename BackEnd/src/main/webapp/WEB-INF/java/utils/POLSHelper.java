@@ -25,5 +25,9 @@ public class POLSHelper {
         return df.format(new Date()).toString();
     }
 
+    public static String generateToken() {
+        //TODO: generate token
+        return "1111";
+    }
 
 }
