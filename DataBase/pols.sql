@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 20, 2018 at 07:59 PM
+-- Generation Time: Nov 25, 2018 at 08:33 PM
 -- Server version: 5.7.21
 -- PHP Version: 7.2.7
 
@@ -42,16 +42,15 @@ CREATE TABLE `Classes` (
   `class_name` varchar(45) NOT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
-  `decription` varchar(512) DEFAULT NULL,
-  `syllabus` varchar(25) DEFAULT NULL
+  `decription` varchar(512) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `Classes`
 --
 
-INSERT INTO `Classes` (`id`, `instructor_id`, `class_name`, `start_date`, `end_date`, `decription`, `syllabus`) VALUES
-(1, 1, 'software engineering', '2017-02-04', '2018-02-03', 'Created by Frank', 'This is the syllabus');
+INSERT INTO `Classes` (`id`, `instructor_id`, `class_name`, `start_date`, `end_date`, `decription`) VALUES
+(1, 1, 'software engineering', '2017-02-04', '2018-02-03', 'Created by Frank');
 
 -- --------------------------------------------------------
 
@@ -74,7 +73,11 @@ CREATE TABLE `Documents` (
 --
 
 INSERT INTO `Documents` (`id`, `c_id`, `filename`, `type`, `path`, `create_date`, `publish`) VALUES
-(5, 1, 'Music', 'video', 'http://wj98127.iteye.com/blog/360644', '2018-11-20', 1);
+(9, 1, 'Musics', 'video', 'http://wj98127.iteye.com/blog/360644', '2018-11-20', 1),
+(11, 1, 'panda.pdf', 'syllabus', '/Users/frankyu/WorkSpace/Projects/POLS/ClassProject/BackEnd/target/POLS/WEB-INF/upload/1/panda.pdf', '2018-11-21', 1),
+(13, 1, 'video', 'video', 'https://docs.google.com/document/d/12Q-htIRhtxGYtRnjLwVoP5UyWq1T9y4vzfd6yv_zPZg/edit#', '2018-11-21', 0),
+(14, 1, 'Haonan Yu Resume.pdf', 'syllabus', '/Users/frankyu/WorkSpace/Projects/POLS/ClassProject/BackEnd/target/POLS/WEB-INF/upload/1/Haonan Yu Resume.pdf', '2018-11-24', 0),
+(15, 1, 'software quality.pdf', 'file', '/Users/frankyu/WorkSpace/Projects/POLS/ClassProject/BackEnd/target/POLS/WEB-INF/upload/1/software quality.pdf', '2018-11-24', 0);
 
 -- --------------------------------------------------------
 
@@ -135,7 +138,10 @@ CREATE TABLE `User_Class` (
 --
 
 INSERT INTO `User_Class` (`u_id`, `c_id`) VALUES
-(1, 1);
+(1, 1),
+(2, 1),
+(12, 1),
+(13, 1);
 
 --
 -- Indexes for dumped tables
@@ -201,7 +207,7 @@ ALTER TABLE `Classes`
 -- AUTO_INCREMENT for table `Documents`
 --
 ALTER TABLE `Documents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `Users`
@@ -238,4 +244,5 @@ ALTER TABLE `Grades`
 ALTER TABLE `User_Class`
   ADD CONSTRAINT `fk_class` FOREIGN KEY (`c_id`) REFERENCES `Classes` (`id`),
   ADD CONSTRAINT `fk_user` FOREIGN KEY (`u_id`) REFERENCES `Users` (`id`);
+
 
