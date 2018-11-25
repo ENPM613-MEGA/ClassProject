@@ -287,28 +287,28 @@ public class DocumentsController {
     }
 
 
-    /*
-    * get file list of a class
-    * */
-    @RequestMapping(value = "/get-class-files/{cId}&{uId}&{token}", method = RequestMethod.GET)
-    public Map<String, Object> getClassFiles(@PathVariable int cId, @PathVariable int uId, @PathVariable String token) {
-
-        if (token == null || !validator.isTokenValid(uId, token)) {
-            return POLSHelper.failureReturnConstructor("token not match to user!");
-        }
-
-        if (!validator.isMemberOfClass(uId, cId)) {//check privilige
-            return POLSHelper.failureReturnConstructor("user do not have the privilige to update this file!");
-        }
-
-        Map<String, Object> mapModel = new HashMap<>();
-        try{
-            mapModel.put("status", "success");
-            mapModel.put("files", documentDAO.getClassFiles(cId));
-        }catch (Exception e) {
-            e.printStackTrace();
-            POLSHelper.failureReturnConstructor(e.getMessage());
-        }
-        return mapModel;
-    }
+//    /*
+//    * get file list of a class
+//    * */
+//    @RequestMapping(value = "/get-class-files/{cId}&{uId}&{token}", method = RequestMethod.GET)
+//    public Map<String, Object> getClassFiles(@PathVariable int cId, @PathVariable int uId, @PathVariable String token) {
+//
+//        if (token == null || !validator.isTokenValid(uId, token)) {
+//            return POLSHelper.failureReturnConstructor("token not match to user!");
+//        }
+//
+//        if (!validator.isMemberOfClass(uId, cId)) {//check privilige
+//            return POLSHelper.failureReturnConstructor("user do not have the privilige to update this file!");
+//        }
+//
+//        Map<String, Object> mapModel = new HashMap<>();
+//        try{
+//            mapModel.put("status", "success");
+//            mapModel.put("files", documentDAO.getClassFiles(cId));
+//        }catch (Exception e) {
+//            e.printStackTrace();
+//            POLSHelper.failureReturnConstructor(e.getMessage());
+//        }
+//        return mapModel;
+//    }
 }

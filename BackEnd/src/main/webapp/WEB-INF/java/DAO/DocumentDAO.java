@@ -90,12 +90,12 @@ public class DocumentDAO {
 
 
     private final String GET_CLASS_FILES = "SELECT id, filename, publish, type " +
-                                           "FROM Documents WHERE c_id = ?";
+                                           "FROM Documents WHERE c_id = ? AND (type = 'file' OR type = 'syllabus')";
 
     /*
     * get the raw list of files of specific class
     * */
-    public List<Map<String, Object>> getClassFiles(int cId) {
+    public List<Map<String, Object>> getClassFileList(int cId) {
 
         try {
             return jdbcTemplate.queryForList(GET_CLASS_FILES, new Object[]{cId});

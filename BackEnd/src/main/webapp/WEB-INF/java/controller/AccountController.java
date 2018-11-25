@@ -44,7 +44,15 @@ public class AccountController {
             if (account.getPasswd().equals(passwd)) {
                 mapModel.put("status", "success");
                 mapModel.put("token", POLSHelper.generateToken());
-                mapModel.put("userProfile", account);
+                Account returnAccount = new Account.AccountBuilder(account.getUsername(), account.getGender(), account.getRole())
+                        .setId(account.getId())
+                        .setEmail(account.getEmail())
+                        .setAddress(account.getAddress())
+                        .setColorBlind(account.getColorBlind())
+                        .setBirth(account.getBirth())
+                        .setPoints(account.getPoints())
+                        .build();
+                mapModel.put("userProfile", returnAccount);
                 //TODO: add userCourses
                 //TODO: add userAssignments
                 //TODO: add userGrades

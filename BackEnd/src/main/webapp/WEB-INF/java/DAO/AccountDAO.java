@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import utils.Validator;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -143,4 +143,21 @@ public class AccountDAO {
         }
         return null;
     }
+
+    private final String GET_STUDENTS_LIST_BY_CLASS = "SELECT Users.id, Users.username FROM " +
+                                                      "Users, User_Class WHERE " +
+                                                      "Users.id = User_Class.u_id AND User_Class.c_id = ? " +
+                                                      "AND Users.role = 'student'";
+
+    /*
+    * Get student list of a class
+    * */
+    public List<Map<String, Object>> getClassStudentList(int cId) {
+        try{
+            return jdbcTemplate.queryForList(GET_STUDENTS_LIST_BY_CLASS, new Object[]{cId});
+        }catch (Exception e) {
+            throw e;
+        }
+    }
+
 }
