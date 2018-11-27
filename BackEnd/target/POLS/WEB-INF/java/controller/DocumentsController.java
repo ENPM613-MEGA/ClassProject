@@ -200,6 +200,7 @@ public class DocumentsController {
             File delFile = new File(document.getPath());
             if (!delFile.delete()) {
                 System.out.println("delete file" + delFile.getName() + "Failed!");
+                return POLSHelper.failureReturnConstructor("delete file failed!");
             }
         }
 
