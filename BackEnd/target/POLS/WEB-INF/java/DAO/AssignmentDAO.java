@@ -67,4 +67,31 @@ public class AssignmentDAO {
             throw e;
         }
     }
+
+    private final String UPDATE_ASSIGNMENT = "UPDATE Assignments " +
+                                             "SET c_id = ?, ass_name = ?, path = ?, create_date = ?, due_date = ?, publish = ? " +
+                                             "WHERE id = ?";
+    /*
+    * update an assignment record
+    * */
+    public void updateAssignment(Assignment assignment) {
+        SimpleDateFormat dfCreateDate = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dfDueDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        Object[] inputs = new Object[7];
+        inputs[0] = assignment.getClassId();
+        inputs[1] = assignment.getName();
+        inputs[2] = assignment.getPath();
+        inputs[3] = dfCreateDate.format(assignment.getCreateDate());
+        inputs[4] = dfDueDate.format(assignment.getDueDate());
+        inputs[5] = assignment.getPublish();
+        inputs[6] = assignment.getId();
+
+        try{
+            jdbcTemplate.update(UPDATE_ASSIGNMENT, inputs);
+        }catch (Exception e) {
+            throw e;
+        }
+    }
+
 }
