@@ -27,15 +27,15 @@ public class GradeController {
     /**
      * Query for the grade for certain user and certain assignment.
      *
-     * @param userId, assignmentId.
+     * @param u_id, a_id.
      * @return mapModel.
      */
-    @RequestMapping(value = "/gradePage/{userId}/{assignmentId}", method = RequestMethod.GET)
-    public Map<String, Object> showGrade(???) {
+    @RequestMapping(value = "/gradePage/{u_id}/{a_id}", method = RequestMethod.GET)
+    public Map<String, Object> showGrade(@PathVariable int u_id, @PathVariable int a_id) {
         Map<String, Object> mapModel = new HashMap<>();
 
         try {
-            Grade grade = gradeDAO.getGrade(userId, assignmentId);
+            Grade grade = gradeDAO.getGrade(u_id, a_id);
             mapModel.put("status", "success");
             mapModel.put("grade", grade);
         } catch (Exception e) {
@@ -47,17 +47,17 @@ public class GradeController {
     /**
      * Update the grade for certain user and certain assignment.
      *
-     * @param userId, assignmentId, grade.
+     * @param u_id, a_id, grade.
      * @return mapModel.
      */
-    @RequestMapping(value = "/updateGrade/{userId}/{assignmentId}/{grade}", method
+    @RequestMapping(value = "/updateGrade/{u_id}/{a_id}/{grade}", method
             = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> updateGrade(HttpServletRequest rq) {
         Map<String, Object> mapModel = new HashMap<>();
         JSONObject input = JSONHelper.readJSONObject(rq);
 
         try{
-            gradeDAO.updateGrade(input.getInt("userId"), input.getInt("assignmentId"), input.getInt("grade"));
+            gradeDAO.updateGrade(input.getInt("u_id"), input.getInt("a_id"), input.getInt("grade"));
             mapModel.put("status", "success");
         } catch (Exception e){
             mapModel = POLSHelper.failureReturnConstructor(e.getMessage());
