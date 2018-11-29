@@ -6,7 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class AssignmentDAO {
@@ -94,4 +99,46 @@ public class AssignmentDAO {
         }
     }
 
+
+    private final  String GET_ASS_LIST_OF_CLASS = "SELECT id, c_id, ass_name, path, create_date, due_date, publish " +
+                                                  "FROM Assignments WHERE c_id = ?";
+    /*
+    * get assignment list of a class
+    * */
+    public List<Assignment> getAssListByClass(int cId) throws ParseException {
+
+        SimpleDateFormat createDf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dueDf = new SimpleDateFormat("");
+        List<Assignment> res = new ArrayList<>();
+        try {
+             List<Map<String, Object>> list = jdbcTemplate.queryForList(GET_ASS_LIST_OF_CLASS, new Object[]{cId});
+             for (Map<String, Object> map : list) {
+                 Assignment tmp = new Assignment.AssignmentBuilder((Integer) map.get("c_id"), (String) map.get("ass_name"))
+                                                .setId((Integer) map.get("id"))
+                                                .setPath((String) map.get("path"))
+                                                .setCreateDate((Date) map.get("create_date"))
+                                                .setDueDate((Date) map.get("due_date"))
+                                                .setPublish((Boolean) map.get("publish"))
+                                                .build();
+                 res.add(tmp);
+             }
+        }catch (Exception e) {
+            throw e;
+        }
+        return res;
+    }
+
+    private final String GET_CLASS_ASSIGNMENTLIST = "SELECT id, ass_name, create_date, due_date, publish " +
+                                                    "FROM Assignments " +
+                                                    "WHERE c_id = ?";
+    /*
+    * get assignments list of a class
+    * */
+    public List<Map<String, Object>> getClassAssignmentsList(int cId) {
+        try {
+            return jdbcTemplate.queryForList(GET_CLASS_ASSIGNMENTLIST, new Object[]{cId});
+        }catch (Exception e) {
+            throw e;
+        }
+    }
 }
