@@ -85,6 +85,9 @@
 
 
 <script>
+
+import DocumentService from '@/components/DocumentService'
+import VueQuillEditor from 'vue-quill-editor'
   export default {
     data: () => ({
       drawer: null,
