@@ -20,8 +20,8 @@
           destroy-method="close"
           p:driverClassName="com.mysql.jdbc.Driver"
           p:url="jdbc:mysql://localhost:3306/pols"
-          p:username="root"
-          p:password="root"
+          p:username="pols"
+          p:password="pols2018"
     />
 
     <!-- Config JdbcTemplate  -->
