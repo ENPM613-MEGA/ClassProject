@@ -1,6 +1,8 @@
 package controller;
 
 import DAO.AccountDAO;
+import DAO.AssignmentDAO;
+import DAO.POLSClassDAO;
 import domain.Account;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,9 @@ import utils.POLSHelper;
 import utils.Validator;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,6 +25,14 @@ import java.util.Map;
 public class AccountController {
     private AccountDAO accountDAO;
     private Validator validator;
+    private POLSClassDAO polsClassDAO;
+    private AssignmentDAO assignmentDAO;
+
+    @Autowired
+    public void setAssignmentDAO(AssignmentDAO assignmentDAO){this.assignmentDAO = assignmentDAO;}
+
+    @Autowired
+    public void setPolsClassDAO(POLSClassDAO polsClassDAO){this.polsClassDAO = polsClassDAO;}
 
     @Autowired
     public void setValidator(Validator validator) {this.validator = validator;}
@@ -53,13 +65,22 @@ public class AccountController {
                         .setPoints(account.getPoints())
                         .build();
                 mapModel.put("userProfile", returnAccount);
-                //TODO: add userCourses
-                //TODO: add userAssignments
-                //TODO: add userGrades
+                //add classes that the user enrolled in
+                List<Map<String, Object>> classList = polsClassDAO.getClassList(returnAccount.getId());
+                mapModel.put("classes", classList);
+                //add userAssignments
+                List<List<Map<String, Object>>> assList = new ArrayList<>();
+                for (Map<String, Object> POLSclass : classList) {
+                    List<Map<String, Object>> list = assignmentDAO.getClassAssignmentsList((Integer) POLSclass.get("id"));
+                    if (list.size() == 0) continue;
+                    assList.add(list);
+                }
+                mapModel.put("assignmentLists", assList);
+
             }else {
                  mapModel = POLSHelper.failureReturnConstructor("password incorrect");
             }
-         }catch (EmptyResultDataAccessException e) {
+        }catch (EmptyResultDataAccessException e) {
             mapModel = POLSHelper.failureReturnConstructor("user not exists");
         }catch (DataAccessException e) {
             mapModel = POLSHelper.failureReturnConstructor(e.getMessage());
@@ -158,4 +179,25 @@ public class AccountController {
         return mapModel;
     }
 
+    /*
+    * Get account by userId
+    * */
+    @RequestMapping(value = "/get-account/{uId}&{token}", method = RequestMethod.GET)
+    public Map<String, Object> getAccountById(@PathVariable int uId, @PathVariable String token) {
+        Map<String, Object> mapModel = new HashMap<>();
+
+        if(token == null || !validator.isTokenValid(uId, token)) {
+            return POLSHelper.failureReturnConstructor("token not match to user!");
+        }
+
+        try {
+            Account account = accountDAO.getAccountById(uId);
+            mapModel.put("account", account);
+            mapModel.put("status", "success");
+        }catch (Exception e) {
+            e.printStackTrace();
+            POLSHelper.failureReturnConstructor(e.getMessage());
+        }
+        return mapModel;
+    }
 }

@@ -5,11 +5,11 @@ import java.util.Date;
 public class POLSClass {
 
     private Integer id;
+    private Integer instructor;
     private String classname;
-    private String description;
     private Date startDate;
     private Date endDate;
-    private Account instructor;
+    private String description;
 
     public Integer getId() {
         return id;
@@ -31,7 +31,7 @@ public class POLSClass {
         return endDate;
     }
 
-    public Account getInstructor() {
+    public Integer getInstructor() {
         return instructor;
     }
 
@@ -41,7 +41,7 @@ public class POLSClass {
         private String description;
         private Date startDate;
         private Date endDate;
-        private Account instructor;
+        private Integer instructor;
 
         public POLSClassBuilder(){};
 
@@ -70,7 +70,7 @@ public class POLSClass {
             return this;
         }
 
-        public POLSClassBuilder setInstructor(Account instructor) {
+        public POLSClassBuilder setInstructor(Integer instructor) {
             this.instructor = instructor;
             return this;
         }
