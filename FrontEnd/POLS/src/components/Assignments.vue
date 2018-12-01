@@ -85,6 +85,31 @@
 
 
 <script>
+methods: {
+  getAssignmentState: function() {
+  },
+  
+  setAssignmentState: function() {
+  },
+  
+  getAssignment: function() {
+  },
+  
+  editAssignment: function() {
+  },
+  
+  getSubmittedAssignment: function() {
+  },
+  
+  submitAssignment : function() {
+  },
+  
+  deleteAssignment : function() {
+  },
+  
+  
+  
+}
   export default {
     data: () => ({
       drawer: null,
