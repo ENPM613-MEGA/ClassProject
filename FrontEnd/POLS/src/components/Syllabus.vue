@@ -75,7 +75,7 @@
       <v-container fluid fill-height class="grey lighten-4">
         <v-layout justify-center align-center>
           <v-flex shrink>
-            Put content in here
+			<DocumentService></DocumentService>
           </v-flex>
         </v-layout>
       </v-container>
@@ -87,8 +87,12 @@
 <script>
 
 import DocumentService from '@/components/DocumentService'
-import VueQuillEditor from 'vue-quill-editor'
+
+
   export default {
+  	components:{
+  		DocumentService
+  	},
     data: () => ({
       drawer: null,
       items: [

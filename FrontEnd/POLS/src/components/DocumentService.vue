@@ -1,33 +1,53 @@
+<template>
+	<div v-if = "this.ableToEdit">
+	 	<quill-editor v-model="content"
+                  ref="quillEditorA"
+                  @blur="onEditorBlur($event)"
+                  @focus="onEditorFocus($event)"
+                  @ready="onEditorReady($event)">
+		</quill-editor>
+	</div>
+	<div v-else>
+		<div v-if ="this.publish">
+			<div v-html="docContent"></div>
+		</div>
+	</div>
+</template>
 <script>
 import axios from 'axios';
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+import { quillEditor } from 'vue-quill-editor'
+export default{
 
-Vue.component('DocumentService', {
+  components: {
+    quillEditor
+  },
 
-
-
-  data: function() {
+  data() {
     return {
-      docData: ""
+      docData: {
+      	docType: "",
+      	docContent: "",
+      	publish : true,
+      	fid: 1,
+      },
+      ableToEdit: false,
+      
+      uid: 2,
+      token: 0,
     }
+  },
+  mounted(){
+  	this.docData.docContent = getDocument()
+  },
+  computed(){
+
   },
   isAvailableForEdit: function() {
     return {
-      ableToEdit: true
-    }
-  },
-  fileID: function() {
-    return {
-      fid: 1
-    }
-  },
-  userID: function() {
-    return {
-      uid: 2
-    }
-  },
-  gettoken: function() {
-    return {
-      token: 0
+      
     }
   },
   getDocument: function() {
@@ -109,6 +129,6 @@ Vue.component('DocumentService', {
     }
   },
 
-})
+}
 
 </script>
