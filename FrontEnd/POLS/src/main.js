@@ -5,7 +5,6 @@ import App from './App'
 import router from './router'
 import Vuetify from 'vuetify'
 import axios from 'axios'
-import quill from 'quill'
 
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
@@ -20,4 +19,4 @@ new Vue({
 })
 
 
-Vue.use(VueQuillEditor, /* { default global options } */)
+
