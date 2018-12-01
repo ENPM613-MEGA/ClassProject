@@ -85,6 +85,23 @@
 
 
 <script>
+methods: {
+  readTotalgrades: function() {
+  },
+  
+  readgradesByAssignment: function() {
+  },
+  
+  listRedeemableProducts: function() {
+  },
+  
+  redeemgrades: function() {
+  },
+  
+  addgrades: function() {
+  },
+   
+}
   export default {
     data: () => ({
       drawer: null,
