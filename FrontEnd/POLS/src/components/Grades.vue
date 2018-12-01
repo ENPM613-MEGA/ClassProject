@@ -17,6 +17,23 @@
 
 <script>
 import sidebar from "@/components/sidebar"
+methods: {
+  readTotalgrades: function() {
+  },
+  
+  readgradesByAssignment: function() {
+  },
+  
+  listRedeemableProducts: function() {
+  },
+  
+  redeemgrades: function() {
+  },
+  
+  addgrades: function() {
+  },
+   
+}
   export default {
     components:{
       sidebar
