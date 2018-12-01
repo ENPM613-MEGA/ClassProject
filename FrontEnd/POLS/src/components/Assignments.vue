@@ -106,9 +106,7 @@ methods: {
   
   deleteAssignment : function() {
   },
-  
-  
-  
+ 
 }
   export default {
     data: () => ({
