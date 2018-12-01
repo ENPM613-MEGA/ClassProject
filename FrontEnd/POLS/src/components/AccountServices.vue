@@ -19,9 +19,9 @@ export default {
 	      loginData:{
 	      	userName:"",
 	      	password:""
-	      }
-	      instructor:false
-	      loggedin:false
+	      },
+	      instructor:false,
+	      loggedin:false,
 
 	      uid: 0,
 	      token: 0,
@@ -36,13 +36,13 @@ export default {
 
 		},
 		getUserToken(){
-
+			return this.token;
 		},
 		isInstructor(){
 
 		},
 		getUserID(){
-
+			return this.uid;
 		},
 		setColorBlindMode(){
 
