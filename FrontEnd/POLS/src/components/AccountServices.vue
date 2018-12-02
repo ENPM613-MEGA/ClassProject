@@ -23,8 +23,8 @@ export default {
 	      instructor:false,
 	      loggedin:false,
 
-	      uid: 0,
-	      token: 0,
+	      uid: 1,
+	      token: 99999,
 	    }
 	},
 

@@ -20,6 +20,7 @@ import { quillEditor } from 'vue-quill-editor'
 export default {
 
   components: {
+    axios,
     quillEditor
   },
 
