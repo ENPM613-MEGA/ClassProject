@@ -53,9 +53,27 @@ public class AccountDAO {
     }
 
 
+    private final String GET_ACCOUNT_By_ID = "SELECT id, username, password, gender, role," +
+            "birth, points, addr, email, color_blind FROM Users WHERE id = ?";
+
+    /*
+     * get account by userId
+     * */
+    public Account getAccountById(int uId) {
+        try {
+            return (Account) jdbcTemplate.queryForObject(GET_ACCOUNT_By_ID, new Object[]{uId}, new AccountRowMapper());
+        }catch (Exception e) {
+            throw e;
+        }
+
+    }
+
+
     private final String CREATE_NEW_ACCOUNT = "INSERT INTO Users " +
                                             "(username, password, email, gender, birth, role, addr, points, color_blind)" +
                                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+
     /*
     * create a new account
     * the [username] [passwd] [gender] [role] are required
@@ -159,5 +177,7 @@ public class AccountDAO {
             throw e;
         }
     }
+
+
 
 }

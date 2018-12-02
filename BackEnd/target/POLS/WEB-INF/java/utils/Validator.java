@@ -66,4 +66,14 @@ public class Validator {
         //TODO: check the token
         return true;
     }
+
+
+    private final String CHECK_ASS_SUBMITTED = "SELECT count(*) from Grades " +
+                                               "WHERE u_id = ? AND a_id = ?";
+    /*
+    * Check if an assignment has already submiitted by a user
+    * */
+    public boolean isAssignmentSubmitted(int uId, int assId) {
+        return jdbcTemplate.queryForObject(CHECK_ASS_SUBMITTED, Integer.class, uId, assId) > 0;
+    }
 }

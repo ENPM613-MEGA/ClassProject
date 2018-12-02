@@ -21,5 +21,47 @@
 </body>
 
 </html>
-
 // Reference https://www.w3schools.com/tags/tag_meta.asp
+
+
+methods for grades service
+methods: {
+  readTotalgrades: function() {
+  },
+  
+  readgradesByAssignment: function() {
+  },
+  
+  listRedeemableProducts: function() {
+  },
+  
+  redeemgrades: function() {
+  },
+  
+  addgrades: function() {
+  },
+  
+methods for assignment service
+methods: {
+  getAssignmentState: function() {
+  },
+  
+  setAssignmentState: function() {
+  },
+  
+  getAssignment: function() {
+  },
+  
+  editAssignment: function() {
+  },
+  
+  getSubmittedAssignment: function() {
+  },
+  
+  submitAssignment : function() {
+  },
+  
+  deleteAssignment : function() {
+  },
+ 
+}
