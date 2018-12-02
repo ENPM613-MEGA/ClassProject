@@ -20,7 +20,7 @@ export default {
 	      	userName:"",
 	      	password:""
 	      },
-	      instructor:false,
+	      instructor:true,
 	      loggedin:false,
 
 	      uid: 1,
@@ -39,7 +39,7 @@ export default {
 			return this.token;
 		},
 		isInstructor(){
-
+			return this.instructor;
 		},
 		getUserID(){
 			return this.uid;

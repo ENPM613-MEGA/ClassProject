@@ -2,15 +2,12 @@
 	<div>
 		<AccountServices ref="accounts"></AccountServices>
 		<v-toolbar-title>Classes</v-toolbar-title>
-		<div v-html="classData"></div>
+		<div v-html="classesList"></div>
 		<v-toolbar-title>Documents</v-toolbar-title>
 		<div v-html="classDocumentList"></div>
 		<v-toolbar-title>Class Assignments</v-toolbar-title>
 		<div v-html="classAssignmentList"></div>
 		<v-toolbar-title>Class Members</v-toolbar-title>
-		<template v-for="item in classMemberList">
-			
-		</template>
 		<div v-html="classMemberList"></div>
 	</div>
 </template>
@@ -30,12 +27,14 @@ export default {
 	data() {
 		return {
 			classID:1,
-			classData:[],
+			classesList:[],
 			classMemberList:[],
 			classDocumentList:[],
 			classAssignmentList:[],
 			classAssignmentListOk:false,
+			classSelected : false,
 			token:0,
+			isInst:false
 		}
 	},
 
@@ -50,7 +49,24 @@ export default {
 				console.log(reqString)
 				axios
 				.get(reqString)
-				.then(response => (this.classData = response.data))
+				.then(response => {
+					if(response.data.status == "success"){
+					
+						for (var item in response.data.classList){
+							this.classesList.push( [response.data.classList[item].id,
+													response.data.classList[item].instructor_id, 
+													response.data.classList[item].class_name, 
+													response.data.classList[item].start_date, 
+													response.data.classList[item].end_date,
+													response.data.classList[item].description]  )
+						}
+					
+					}else{
+						console.log(" getClassMembers failed")
+						this.classesList = []
+					}
+
+				})
 				.catch(error => (this.classData = null))
 			}
 		},
@@ -63,8 +79,34 @@ export default {
 			console.log(reqString)
 			axios
 			.get(reqString)
-			.then(response => (this.classDocumentList = response.data))
-			.catch(error => (this.classDocumentList = null))
+			.then(response => {
+				if(response.data.status == "success"){
+					if (this.isInst){
+						console.log("isInstructor") 
+						for (var item in response.data.files){
+							 
+							this.classDocumentList.push([response.data.files[item].id,response.data.files[item].filename,response.data.files[item].type,response.data.files[item].publish ])
+						}
+					}else{
+						console.log("isStudent")
+						for (var item in response.data.files){
+							if (response.data.files[item].publish == true){
+								console.log("visible")
+								this.classDocumentList.push([response.data.files[item].id,response.data.files[item].filename,response.data.files[item].type])
+							}else{
+								console.log("notvisible")
+							}
+							
+						}
+					}
+				
+				}else{
+					console.log(" getClassDocumentList failed")
+					this.classDocumentList = []
+				}
+
+			})
+			.catch(error => (this.classDocumentList = []))
 		},
 		addClassDocument(cid,aid){
 
@@ -76,12 +118,20 @@ export default {
 			var uid = this.$refs.accounts.getUserID()
 			var token = this.$refs.accounts.getUserToken()
 			var reqString = 'http://localhost:8080/v1/class/get-class-assignments-list/'+uid +"&"+ this.classID + "&" + token
-			
-			console.log(reqString)
+		
 			axios
 			.get(reqString)
-			.then(response => (this.classData = response.data))
-			.catch(error => (this.classData = null))
+			.then(response => {
+				if(response.data.status == "success"){
+				
+				
+				}else{
+					console.log(" getClassMembers failed")
+					this.classMemberList = []
+				}
+
+			})
+			.catch(error => (this.classAssignmentList = []))
 		},
 		getClassAssignment(cid,aid){
 
@@ -90,22 +140,26 @@ export default {
 			var uid = this.$refs.accounts.getUserID()
 			var token = this.$refs.accounts.getUserToken()
 			var reqString = 'http://localhost:8080/v1/class/get-class-students/'+uid +"&"+ this.classID + "&" + token
-			var returnString = ""
-			console.log(reqString)
+			
 			axios
 			.get(reqString)
-			.then(response => (this.classMemberList = response.data))
-			.catch(error => (this.classMemberList = null))
+			.then(response => {
+				if(response.data.status == "success"){
+				
+					for (var item in response.data.studentList){
+						this.classMemberList.push( [response.data.studentList[item].id,response.data.studentList[item].username] )
+					}
+				
+				}else{
+					console.log(" getClassMembers failed")
+					this.classMemberList = []
+				}
 
-			console.log(String(this.classMemberList))
-			if (this.classMemberList === "success") {
-				classAssignmentListOk = true
-				console.log("classMember ok")
-			}else{
-				console.log("classMember bad")
-			}
+			})
+			.catch(error => (this.classMemberList = []))
 
 		},
+
 
 	},
 	mounted(){
@@ -115,6 +169,7 @@ export default {
 		this.getClassDocumentList()
 		this.getClassAssignmentList(1)
 		this.getClassMembers(1)
+		this.isInst = this.$refs.accounts.isInstructor()
 	}
 }
 
