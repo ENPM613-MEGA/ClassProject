@@ -244,5 +244,5 @@ ALTER TABLE `Grades`
 ALTER TABLE `User_Class`
   ADD CONSTRAINT `fk_class` FOREIGN KEY (`c_id`) REFERENCES `Classes` (`id`),
   ADD CONSTRAINT `fk_user` FOREIGN KEY (`u_id`) REFERENCES `Users` (`id`);
-
+ 6
 
