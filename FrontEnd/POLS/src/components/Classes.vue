@@ -6,7 +6,7 @@
     <v-content>
     <v-container fluid fill-height class="grey lighten-4">
     <v-layout justify-center align-center>
-      <v-flex shrink>
+      <v-flex xs12 sm6 >
       <classService></classService>
       </v-flex>
     </v-layout>
