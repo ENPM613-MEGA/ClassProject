@@ -1,69 +1,65 @@
 <template>
 </template>
-
 <script>
 export default {
 	data() {
-	    return {
-	      regData: {
-	      	username:"",
-	      	password:"",
-	      	gender:"",
-	      	role:"",
-	      	birth:"",
-	      	points:"",
-	      	address:"",
-	      	email:"",
-	      	colorBlind:true
-	      },
-	      loginData:{
-	      	userName:"",
-	      	password:""
-	      },
-	      instructor:true,
-	      loggedin:false,
+		return {
+			regData: {
+				username: "",
+				password: "",
+				gender: "",
+				role: "",
+				birth: "",
+				points: "",
+				address: "",
+				email: "",
+				colorBlind: true
+			},
+			loginData: {
+				userName: "",
+				password: ""
+			},
+			instructor: true,
+			loggedin: false,
 
-	      uid: 1,
-	      token: 99999,
-	    }
+			uid: 1,
+			token: 99999,
+		}
 	},
 
 	methods: {
-		isLoggedin(){
+		isLoggedin() {
 			return this.loggedin;
 		},
-		isStudent(){
+		isStudent() {
 
 		},
-		getUserToken(){
+		getUserToken() {
 			return this.token;
 		},
-		isInstructor(){
+		isInstructor() {
 			return this.instructor;
 		},
-		getUserID(){
+		getUserID() {
 			return this.uid;
 		},
-		setColorBlindMode(){
+		setColorBlindMode() {
 
 		},
-		getColorBlindMode(){
+		getColorBlindMode() {
 
 		},
-		getAddress(){
+		getAddress() {
 
 		},
-		tryLogin(){
+		tryLogin() {
 
 		},
-		tryRegister(){
+		tryRegister() {
 
 		}
 
 	}
 }
-
-
-
 
 </script>
