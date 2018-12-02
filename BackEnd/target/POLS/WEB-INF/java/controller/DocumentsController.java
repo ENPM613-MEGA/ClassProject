@@ -16,10 +16,7 @@ import utils.Validator;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -218,15 +215,12 @@ public class DocumentsController {
      *
      * */
     @RequestMapping(value = "/download-file/{fId}&{uId}&{token}", method = RequestMethod.GET)
-    public void downloadFile(@PathVariable int fId, @PathVariable int uId, @PathVariable String token,
+    public Map<String, Object> downloadFile(@PathVariable int fId, @PathVariable int uId, @PathVariable String token,
                              HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        Map<String, Object> mapModel = new HashMap<>();
         ServletContext context = request.getServletContext();
         Document document = documentDAO.getDocumentByFID(fId);
-        String fullPath = document.getPath();
-        File downloadFile = new File(fullPath);
-        FileInputStream inputStream = new FileInputStream(downloadFile);
-        String mimeType = context.getMimeType(fullPath); // get the MIME Type based on file path
 
         if (token == null || !validator.isTokenValid(uId, token)) {//check token
             throw new RuntimeException("token not match to user!");
@@ -235,6 +229,17 @@ public class DocumentsController {
         if (!validator.isMemberOfClass(uId, document.getClassId())) {//check privilige
             throw new RuntimeException("user do not have the access to the source!");
         }
+
+        if (document.getType().toLowerCase().equals("video")) {
+            mapModel.put("status", "success");
+            mapModel.put("document", document);
+            return mapModel;
+        }
+
+        String fullPath = document.getPath();
+        File downloadFile = new File(fullPath);
+        FileInputStream inputStream = new FileInputStream(downloadFile);
+        String mimeType = context.getMimeType(fullPath); // get the MIME Type based on file path
 
         //check mineType
         if (mimeType == null) {
@@ -251,6 +256,7 @@ public class DocumentsController {
         // download the file
         InputStream in = new FileInputStream(downloadFile);
         FileCopyUtils.copy(in, response.getOutputStream());
+        return null;
     }
 
 
