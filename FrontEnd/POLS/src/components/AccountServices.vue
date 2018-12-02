@@ -30,7 +30,7 @@ export default {
 
 	methods: {
 		isLoggedin(){
-			return true;
+			return this.loggedin;
 		},
 		isStudent(){
 
