@@ -392,8 +392,12 @@ export default {
 				var reqString = 'http://localhost:8080/v1/document/delete-file/' + fid + "&" + this.uid + "&" + this.token
 				console.log(reqString);
 				axios
-					.delete(reqString)
-					.then(response => (console.log(response.data)))
+					.post(reqString)
+					.then(response => {
+
+						console.log(response.data)
+
+					})
 					.catch(error => (console.log("failed to delete")))
 
 			} else {
