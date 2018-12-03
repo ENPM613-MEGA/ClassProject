@@ -6,8 +6,8 @@
 		<v-content>
 			<v-container fluid fill-height class="grey lighten-4">
 				<v-layout justify-center align-center>
-					<v-flex xs12 sm6>
-						Put content in here
+					<v-flex xs12 sm10>
+						<DocumentService></DocumentService>
 					</v-flex>
 				</v-layout>
 			</v-container>
@@ -15,10 +15,14 @@
 	</v-app>
 </template>
 <script>
+import AccountServices from '@/components/AccountServices'
+import DocumentService from '@/components/DocumentService'
 import sidebar from "@/components/sidebar"
 export default {
 	components: {
-		sidebar
+		sidebar,
+		AccountServices,
+		DocumentService
 	},
 	data: () => ({
 		drawer: null,
@@ -58,6 +62,7 @@ export default {
 	},
 	mounted() {
 		this.$refs.sidebarData.setData(this.items)
+		
 	}
 }
 

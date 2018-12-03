@@ -6,8 +6,8 @@
 		<v-content>
 			<v-container fluid fill-height class="grey lighten-4">
 				<v-layout justify-center align-center>
-					<v-flex xs12 sm6>
-						<DocumentService></DocumentService>
+					<v-flex xs12 sm10>
+						<DocumentService ref="DS"></DocumentService>
 					</v-flex>
 				</v-layout>
 			</v-container>
@@ -60,6 +60,7 @@ export default {
 	}),
 	mounted() {
 		this.$refs.sidebarData.setData(this.items)
+		this.$refs.DS.show = false
 	},
 	props: {
 		source: String
