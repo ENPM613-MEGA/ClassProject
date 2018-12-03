@@ -30,22 +30,62 @@
               <v-card-text>
               <v-form v-model="valid">
                   <v-text-field
-                    v-model="email"
-                    :rules="emailRules"
+                    v-model="username"
+                    :rules="passwordRules"
                     :counter="10"
-                    label="Email"
+                    label="User Name"
                     required
                   ></v-text-field>
                   <v-text-field
-                    v-model="password"
+                    v-model="passwd"
                     :rules="passwordRules"
                     label="Password"
                     required
                   ></v-text-field>
                   <v-text-field
-                    v-model="password"
+                    v-model="gender"
                     :rules="passwordRules"
-                    label="Name"
+                    label="Gender"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="role"
+                    :rules="passwordRules"
+                    label="Role"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="birth"
+                    :rules="passwordRules"
+                    label="Date of Birth"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="points"
+                    :rules="passwordRules"
+                    :counter="10"
+                    label="Points"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="address"
+                    :rules="passwordRules"
+                    :counter="10"
+                    label="Address"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="email"
+                    :rules="passwordRules"
+                    :counter="10"
+                    label="Email"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="colorBlind"
+                    :rules="passwordRules"
+                    :counter="10"
+                    label="Color Blind"
                     required
                   ></v-text-field>
                 </v-form>
@@ -53,7 +93,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary">Register</v-btn>
+                <v-btn color="primary" @click='Registeruser'>Register</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -64,19 +104,47 @@
 </template>
 
 <script>
+  import axios from 'axios'
+  import {mapGetters} from 'vuex'
   export default {
     data: () => ({
       valid: false,
+      username:'',
+      passwd:'',
+      gender:'',
+      role:'',
+      birth:'',
+      points:'',
+      address:'',
       email: '',
+      colorBlind: '',
       emailRules: [
         v => !!v || 'Email is required',
         v => v.length <= 10 || 'Email must be less than 10 characters'
       ],
-      password: '',
       passwordRules: [
         v => !!v || 'Password is needed',
         v => /.+@.+/.test(v) || 'Invalid password'
       ]
-    })
+    }),
+    methods:
+    {
+      Registeruser()
+      {
+        let newuser =
+        {
+          username: this.userName,
+          passwd: this.passwd,
+          gender: this.gender,
+          role: this.role,
+          birth: this.birth,
+          points: this.points,
+          address: this.address,
+          email: this.email,
+          colorBlind: this.colorBlind
+        }
+        this.$store.dispatch('Register',newuser)
+      }
+    }
   }
 </script>

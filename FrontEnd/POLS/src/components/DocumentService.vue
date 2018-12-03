@@ -1,15 +1,74 @@
 <template>
-  <div>
-    <v-btn small ripple v-on:click='createDocument(1)'>Upload</v-btn>
-    <div v-if="this.ableToEdit">
-
-    </div>
-    <div v-else>
-      <div v-if="this.publish">
-        <div v-html="docContent"></div>
-      </div>
-    </div>
-  </div>
+	<div>
+		<AccountServices ref="accounts"></AccountServices>
+		<div v-if="show">
+			<div v-if="syllabus">
+				<div v-if="this.ableToEdit">
+					<div right @click="saveDocument()">
+						<v-btn small color="primary">Save</v-btn>
+					</div>
+					<quill-editor v-model="this.docData.docContent"></quill-editor>
+				</div>
+				<div v-else>
+					<div v-if="this.isInst" right @click="enableEditDocument()">
+						<v-btn small color="primary">edit</v-btn>
+					</div>
+					<div v-html="this.docData.docContent"></div>
+				</div>
+			</div>
+			<div v-else-if="upload">
+				<div>
+					<v-subheader><b>Upload File</b></v-subheader>
+					<v-select v-model="fileDefault" ref="uploadFileType" :items="fileTypes" label="File Type"></v-select>
+					<input type="file" accept="*" class="input-file" ref="fileLoc">
+					<v-btn small color="primary" @click="finishUpload(fileDefault)">Upload</v-btn>
+				</div>
+				<div>
+					<v-subheader><b>Upload Video</b></v-subheader>
+					<v-text-field label="Video Link"></v-text-field>
+					<v-btn small color="primary" @click="finishUploadVideo()">Upload video</v-btn>
+				</div>
+			</div>
+			<div v-else-if="ableToEdit">
+				<div>
+					<v-btn small color="primary" @click="">Save file </v-btn>
+				</div>
+			</div>
+			<div v-else>
+				<div v-if="showFile" auto-grow:true>
+					<v-textarea v-model="docData.docContent"  rows="25"></v-textarea>
+					<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
+				</div>
+				<div v-else>
+					<v-container>
+						<v-toolbar-title><b>Class Documents</b></v-toolbar-title>
+						<div v-if="isInst">
+							<div>
+								<v-btn small color="primary" @click="enableUpload()">Upload File</v-btn>
+							</div>
+						</div>
+						<v-container v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
+							<v-list-tile-content>
+								<h3 class="headline mb-0">{{ item.filename}}</h3>
+								<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
+								<div v-if="isInst">
+									<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
+									<div>
+										<v-btn small color="primary" @click="viewFile(item.fileID)">view file </v-btn>
+									</div>
+									<div v-if="isInst">
+										<v-btn small color="primary" @click="deleteDocument(item.fileID)">delete file </v-btn>
+										<v-btn small color="primary" @click="editFile(item.fileID)">edit file </v-btn>
+										<v-btn small color="primary" @click="changeFileVis(item.fileID, item.filepublish)">change Visibility </v-btn>
+									</div>
+								</div>
+							</v-list-tile-content>
+						</v-container>
+					</v-container>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 <script>
 import axios from 'axios';
@@ -17,166 +76,335 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+import AccountServices from '@/components/AccountServices'
+
 export default {
 
-  components: {
-    axios,
-    quillEditor
-  },
+	components: {
+		axios,
+		quillEditor,
+		AccountServices
+	},
 
-  data() {
-    return {
-      docData: {
-        docType: "",
-        docContent: "",
-        publish: true,
-        fid: 3,
-      },
-      ableToEdit: false,
+	data() {
+		return {
+			fileTypes: [
+				"syllabus",
+				"file",
+				"test",
+			],
+			docData: {
+				docType: [],
+				docContent: [],
+				publish: false,
+				fid: 1,
+				classID: 0,
+				createDate: 0,
 
-      uid: 2,
-      token: 0,
-    }
-  },
-  methods: {
-    getDocument: function() {
-      if (this.docData.fid != 0 && this.docData.uid != 0) {
+			},
+			classDocumentList: [],
+			upload: false,
 
-        console.log('http://localhost:8080/v1/document/download-file/' + this.docData.fid + "&" + this.uid + "&" + this.token)
+			syllabus: false,
+			ableToEdit: false,
+			show: true,
+			uid: 1,
+			token: 0,
+			isInst: false,
+			showFile: false,
+			fileDefault: "file"
+		}
+	},
+	methods: {
+		getDocument(fid) {
+			if (fid != 0 && this.docData.uid != 0) {
 
-        axios
-          .get('http://localhost:8080/v1/document/download-file/' + this.docData.fid + "&" + this.uid + "&" + this.token)
-          .then(response => (this.docData.docContent = response))
-          .catch(error => (this.docData.docContent = null))
+				var reqString = ('http://localhost:8080/v1/document/download-file/' + fid + "&" + this.uid + "&" + this.token)
+				console.log(reqString)
+				axios
+					.get(reqString)
+					.then(response => {
 
-        console.log("finished request")
-      } else {
-        this.docData.docContent = null
-      }
-    },
-    updateDocument: function() {
-      var returnData = false
-      if (this.file != 0 && this.uid != 0 && docData != null) {
+						if (response.status == "200") {
+							//console.log(JSON.stringify(response.data))
+							if (JSON.stringify(response.headers) == "{\"content-type\"\:\"text/html\"}") {
+								//console.log("is html")
+								this.docData.docContent = response.data;
 
-        axios
-          .post('http://localhost:8080/v1/document/update-file/', {
-            params: {
-              [u]: this.uid,
-              [fid]: this.fid,
-              [token]: this.token,
-              [data]: docData,
-              [publish]: false,
+							} else {
 
-            }
-          })
-          .then(response => (returnData = true))
-          .catch(error => (returnData = false))
+								if (response.data.filename == "video") {
+									console.log("is video")
+									this.docData.fid = response.data.id;
+									this.docData.classID = response.data.classId;
+									this.docData.fileName = response.data.filename;
+									this.docData.docType = response.data.type;
+									this.docData.docContent = response.data.path;
+									this.docData.createDate = response.data.createDate;
+									this.docData.publish = response.data.publish;
+								} else {
+									console.log("is not video")
+									this.docData.fid = response.data.id;
+									this.docData.classID = response.data.classId;
+									this.docData.fileName = response.data.filename;
+									this.docData.docType = response.data.type;
+									this.docData.docContent = response.data.path;
+									this.docData.createDate = response.data.createDate;
+									this.docData.publish = response.data.publish;
+								}
+								this.docData.docContent = (response.data);
 
-      } else {
-        returnData = false
-      }
-    },
-    createDocument: function(cid) {
-      
-      if (this.file != 0 && this.uid != 0 && this.cid != 0) {
+							}
 
+						} else {
 
-        axios
-          .post('http://localhost:8080/v1/document/upload-file/', {
-            params: {
-              [file]: docData,
-              [cId]: 1,
-              [uId]: this.uid,
-              [type]: "syllabus",
-              [publish]: true,
-              [token]: this.token
-            }
-          })
-          .then(response => (returnData = 99999))
-          .catch(error => (returnData = 0))
-
-      } else {
-        returnData = 0
-      }
-    },
-    hideDocument: function(publish_i) {
-      var returnData = false
-      if (this.file != 0 && this.uid != 0 && docData != null) {
-
-        axios
-          .post('http://localhost:8080/v1/document/update-file/', {
-            params: {
-              [uId]: this.uid,
-              [fid]: this.fid,
-              [token]: this.token,
-              [data]: docData,
-              [publish]: publish_i,
-
-            }
-          })
-          .then(response => (returnData = true))
-          .catch(error => (returnData = false))
-
-      } else {
-        returnData = false
-      }
-    },
-  },
-  beforeMount() {
-    this.getDocument()
-  },
+						}
 
 
-  isAvailableForEdit: function() {
-    return {
 
-    }
-  },
+					})
+					.catch(error => {
 
-  createDocument: function(cid) {
-    var returnData = 0
-    if (this.file != 0 && this.uid != 0 && this.cid != 0) {
+						console.log("bad at getting document")
+					})
 
-      axios
-        .post('http://localhost:8080/v1/document/upload-file/', {
-          params: {
-            [file]: docData,
-            [cId]: this.fid,
-            [uId]: this.uid,
-            [type]: "syllabus",
-            [publish]: true,
-            [token]: this.token
-          }
-        })
-        .then(response => (returnData = 99999))
-        .catch(error => (returnData = 0))
+				//console.log("finished request")
+			} else {
+				this.docData.docContent = null
+			}
+		},
+		updateDocument() {
+			var returnData = false
+			if (this.file != 0 && this.uid != 0 && docData != null) {
 
-    } else {
-      returnData = 0
-    }
-  },
-  hideDocument: function(publish_i) {
-    var returnData = false
-    if (this.file != 0 && this.uid != 0 && docData != null) {
+				var reqString = 'http://localhost:8080/v1/document/update-file/' + this.uId +
+					"&" + this.fid + "&" + this.token + "&" + this.docData + "&" + true;
+				axios
+					.post(reqString)
+					.then(response => (returnData = true))
+					.catch(error => (returnData = false))
 
-      axios
-        .post('http://localhost:8080/v1/document/update-file/', {
-          params: {
-            [uId]: this.uid,
-            [fid]: this.fid,
-            [token]: this.token,
-            [data]: docData,
-            [publish]: publish_i,
+			} else {
+				returnData = false
+			}
+		},
+		createDocument: function(type, fileaddress) {
+			var returnData = 0;
 
-          }
-        })
-        .then(response => (returnData = true))
-        .catch(error => (returnData = false))
 
-    } else {
-      returnData = false
-    }
-  },
+			if (type != "video") {
+
+				var data = new FormData();
+				data.append("file", fileaddress);
+				data.append("cId", 1);
+				data.append("uId", 1);
+				data.append("type", type);
+				data.append("publish", "true");
+				data.append("token", this.token);
+				var reqString = 'http://localhost:8080/v1/document/upload-file/';
+				console.log(reqString);
+				axios
+					.post(reqString, data, {
+						headers: {
+							'Content-Type': 'multipart/form-data'
+						}
+					})
+					.then(response => {
+						vm.$forceUpdate();
+						this.updateDocumentList()
+					})
+					.catch(error => (returnData = 0))
+			}
+
+
+		},
+		updateDocumentList() {
+			var uid = this.$refs.accounts.getUserID()
+			var token = this.$refs.accounts.getUserToken()
+
+			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + 1 + "&" + uid + "&" + token
+
+
+			axios
+				.get(reqString)
+				.then(response => {
+					if (response.data.status == "success") {
+						this.classDocumentList = {}
+						if (this.isInst) {
+
+							for (var item in response.data.files) {
+
+								this.classDocumentList.push({
+									fileID: (response.data.files[item].id),
+									filename: (response.data.files[item].filename),
+									filetype: (response.data.files[item].type),
+									filepublish: (response.data.files[item].publish)
+								})
+
+							}
+						} else {
+							for (var item in response.data.files) {
+								if (response.data.files[item].publish == true) {
+
+									this.classDocumentList.push({
+										fileID: response.data.files[item].id,
+										filename: response.data.files[item].filename,
+										filetype: response.data.files[item].type,
+									})
+								}
+							}
+						}
+
+
+
+					} else {
+						console.log(" getClassDocumentList failed")
+						this.classDocumentList = []
+					}
+
+				})
+				.catch(error => (this.classDocumentList = []))
+
+
+		},
+		getsyllabus() {
+			var uid = this.$refs.accounts.getUserID()
+			var token = this.$refs.accounts.getUserToken()
+
+			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + 1 + "&" + uid + "&" + token
+
+
+			axios
+				.get(reqString)
+				.then(response => {
+					if (response.data.status == "success") {
+						if (this.isInst) {
+
+							for (var item in response.data.files) {
+
+								this.classDocumentList.push({
+									fileID: (response.data.files[item].id),
+									filename: (response.data.files[item].filename),
+									filetype: (response.data.files[item].type),
+									filepublish: (response.data.files[item].publish)
+								})
+
+							}
+						} else {
+							for (var item in response.data.files) {
+								if (response.data.files[item].publish == true) {
+
+									this.classDocumentList.push({
+										fileID: response.data.files[item].id,
+										filename: response.data.files[item].filename,
+										filetype: response.data.files[item].type,
+									})
+								}
+							}
+						}
+						var syllabusID = -1;
+						for (var item in this.classDocumentList) {
+							if (this.classDocumentList[item].filetype == "syllabus") {
+								syllabusID = this.classDocumentList[item].fileID
+								break
+							}
+						}
+						//console.log(syllabusID)
+						if (syllabusID > 0) {
+							this.getDocument(syllabusID)
+						} else {
+							console.log("failed to find syllabus")
+						}
+
+					} else {
+						console.log(" getClassDocumentList failed")
+						this.classDocumentList = []
+					}
+
+				})
+				.catch(error => (this.classDocumentList = []))
+
+
+		},
+		changeFileVis: function(fid, publish_i) {
+			var returnData = false
+			if (this.file != 0 && this.uid != 0 && docData != null) {
+
+				axios
+					.post('http://localhost:8080/v1/document/update-file/', {
+						params: {
+							[uId]: this.uid,
+							[fid]: fid,
+							[token]: this.token,
+							[data]: this.docData.docContent,
+							[publish]: !publish_i,
+
+						}
+					})
+					.then(response => (returnData = true))
+					.catch(error => (returnData = false))
+
+			} else {
+				returnData = false
+			}
+		},
+		deleteDocument: function(fid) {
+			var returnData = false
+			if (this.uid != 0 && fid!= 0 ) {
+				var reqString = 'http://localhost:8080/v1/document/delete-file/'+fid+"&"+this.uid+"&"+this.token
+				console.log(reqString);
+				axios
+					.delete(reqString)
+					.then(response => (console.log(response.data)))
+					.catch(error => (console.log("failed to delete")))
+
+			} else {
+				console.log("cant delete")
+			}
+		},
+		isAvailableForEdit: function() {
+			return {
+
+			}
+		},
+		enableEditDocument() {
+			this.ableToEdit = true;
+		},
+		saveDocument() {
+			this.ableToEdit = false;
+		},
+		enableUpload() {
+			this.upload = true;
+		},
+		finishUpload(type) {
+			this.upload = false;
+
+			//upload file 
+			this.createDocument(type,this.$refs.fileLoc.files[0])
+			
+		},
+		finishUploadVideo(type) {
+			this.upload = false;
+						//upload file 
+			
+
+		},
+		viewFile(fid) {
+			this.showFile = true
+			this.getDocument(fid);
+
+		},
+		closeFile() {
+			this.showFile = false
+		},
+	},
+	mounted() {
+		//this.getDocument()
+		this.getsyllabus()
+		this.isInst = this.$refs.accounts.isInstructor()
+	},
+
+
 
 
 }

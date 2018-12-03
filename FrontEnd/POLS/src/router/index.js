@@ -12,9 +12,9 @@ import Modules from '@/components/Modules'
 import Classes from '@/components/Classes'
 
 import Vuetify from 'vuetify'
+import axios from 'axios'
 
-
-
+Vue.use(axios)
 Vue.use(Vuetify)
 Vue.use(Router)
 
@@ -25,6 +25,11 @@ export default new Router({
         path: "/home",
         name: "home",
         component: Home
+      },
+      {
+        path: "/register",
+        name: "register",
+        component: Register
       },
       {
         path: "/login",
@@ -71,7 +76,5 @@ export default new Router({
         name: "Classes",
         component: Classes
       }
-
-
           ]
 })
