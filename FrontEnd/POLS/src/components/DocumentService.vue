@@ -3,17 +3,17 @@
 		<AccountServices ref="accounts"></AccountServices>
 		<div v-if="show">
 			<div v-if="syllabus">
-				<div v-if="this.ableToEdit">
+				<div v-if="ableToEdit">
 					<div right @click="saveDocument()">
 						<v-btn small color="primary">Save</v-btn>
 					</div>
-					<quill-editor v-model="this.docData.docContent"></quill-editor>
+					<quill-editor v-model="docData.docContent"></quill-editor>
 				</div>
 				<div v-else>
-					<div v-if="this.isInst" right @click="enableEditDocument()">
+					<div v-if="isInst" right @click="enableEditDocument()">
 						<v-btn small color="primary">edit</v-btn>
 					</div>
-					<div v-html="this.docData.docContent"></div>
+					<div v-html="docData.docContent"></div>
 				</div>
 			</div>
 			<div v-else-if="upload">
@@ -25,19 +25,25 @@
 				</div>
 				<div>
 					<v-subheader><b>Upload Video</b></v-subheader>
-					<v-text-field label="Video Link"></v-text-field>
+					<v-text-field label="Video Link" ref="vLink"></v-text-field>
 					<v-btn small color="primary" @click="finishUploadVideo()">Upload video</v-btn>
 				</div>
 			</div>
 			<div v-else-if="ableToEdit">
-				<div>
-					<v-btn small color="primary" @click="">Save file </v-btn>
+				<div right @click="saveDocument()">
+					<v-btn small color="primary">Save</v-btn>
 				</div>
+				<quill-editor v-model="docData.docContent"></quill-editor>
 			</div>
 			<div v-else>
 				<div v-if="showFile" auto-grow:true>
-					<v-textarea v-model="docData.docContent"  rows="25"></v-textarea>
-					<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
+					<div v-if="docData.isVideo">
+						<youtube :video-id="videoId" ref="youtube" @playing="playing"></youtube>
+					</div>
+					<div v-else>
+						<v-textarea v-model="docData.docContent" rows="25"></v-textarea>
+						<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
+					</div>
 				</div>
 				<div v-else>
 					<v-container>
@@ -77,13 +83,16 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
 import AccountServices from '@/components/AccountServices'
-
+import Vue from 'vue'
+import VueYoutube from 'vue-youtube'
+Vue.use(VueYoutube)
 export default {
 
 	components: {
 		axios,
 		quillEditor,
-		AccountServices
+		AccountServices,
+		VueYoutube
 	},
 
 	data() {
@@ -93,6 +102,7 @@ export default {
 				"file",
 				"test",
 			],
+
 			docData: {
 				docType: [],
 				docContent: [],
@@ -100,6 +110,8 @@ export default {
 				fid: 1,
 				classID: 0,
 				createDate: 0,
+				isVideo: false,
+				videoId: 'lG0Ys-2d4MA',
 
 			},
 			classDocumentList: [],
@@ -147,7 +159,7 @@ export default {
 									this.docData.fid = response.data.id;
 									this.docData.classID = response.data.classId;
 									this.docData.fileName = response.data.filename;
-									this.docData.docType = response.data.type;
+									this.docData.docContent = (response.data);
 									this.docData.docContent = response.data.path;
 									this.docData.createDate = response.data.createDate;
 									this.docData.publish = response.data.publish;
@@ -178,7 +190,7 @@ export default {
 			if (this.file != 0 && this.uid != 0 && docData != null) {
 
 				var reqString = 'http://localhost:8080/v1/document/update-file/' + this.uId +
-					"&" + this.fid + "&" + this.token + "&" + this.docData + "&" + true;
+					"&" + this.fid + "&" + this.token + "&" + this.docData.docContent + "&" + true;
 				axios
 					.post(reqString)
 					.then(response => (returnData = true))
@@ -210,10 +222,36 @@ export default {
 						}
 					})
 					.then(response => {
+						console.log("upload file ok")
+						
+						this.updateDocumentList()
+
+					})
+					.catch(error => (console.log("upload file failed")))
+			} else {
+				console.log(fileaddress)
+				var data = new FormData();
+				
+				data.append("cId", 1);
+				data.append("uId", 1);
+				data.append("type", "video");
+				data.append("videoName", "");
+				data.append("url", fileaddress);
+				var reqString = 'http://localhost:8080/v1/document/upload-file/';
+				console.log(reqString);
+				axios
+					.post(reqString, data, {
+						headers: {
+							'Content-Type': 'multipart/form-data'
+						}
+					})
+					.then(response => {
+						console.log("create video ok")
 						vm.$forceUpdate();
 						this.updateDocumentList()
 					})
-					.catch(error => (returnData = 0))
+					.catch(error => (console.log("create video failed")))
+
 			}
 
 
@@ -350,8 +388,8 @@ export default {
 		},
 		deleteDocument: function(fid) {
 			var returnData = false
-			if (this.uid != 0 && fid!= 0 ) {
-				var reqString = 'http://localhost:8080/v1/document/delete-file/'+fid+"&"+this.uid+"&"+this.token
+			if (this.uid != 0 && fid != 0) {
+				var reqString = 'http://localhost:8080/v1/document/delete-file/' + fid + "&" + this.uid + "&" + this.token
 				console.log(reqString);
 				axios
 					.delete(reqString)
@@ -380,13 +418,13 @@ export default {
 			this.upload = false;
 
 			//upload file 
-			this.createDocument(type,this.$refs.fileLoc.files[0])
-			
+			this.createDocument(type, this.$refs.fileLoc.files[0])
+
 		},
 		finishUploadVideo(type) {
 			this.upload = false;
-						//upload file 
-			
+			//upload file 
+			this.createDocument("video", this.$refs.vLink.value)
 
 		},
 		viewFile(fid) {
@@ -397,12 +435,27 @@ export default {
 		closeFile() {
 			this.showFile = false
 		},
+		editFile(fid) {
+			this.enableEditDocument();
+			this.getDocument(fid);
+		},
+		playVideo() {
+			this.player.playVideo()
+		},
+		playing() {
+			console.log('\o/ we are watching!!!')
+		}
 	},
 	mounted() {
 		//this.getDocument()
 		this.getsyllabus()
 		this.isInst = this.$refs.accounts.isInstructor()
 	},
+	computed: {
+		player() {
+			return this.$refs.youtube.player
+		}
+	}
 
 
 
