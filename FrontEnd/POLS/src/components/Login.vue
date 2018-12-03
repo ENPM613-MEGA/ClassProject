@@ -30,15 +30,13 @@
               <v-card-text>
               <v-form v-model="valid">
                   <v-text-field
-                    v-model="email"
-                    :rules="emailRules"
+                    v-model="username"
                     :counter="10"
-                    label="Email"
+                    label="User Name"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="password"
-                    :rules="passwordRules"
                     label="Password"
                     required
                   ></v-text-field>
@@ -58,34 +56,34 @@
 </template>
 
 <script>
+import axios from 'axios'
+import {mapGetters} from 'vuex';
+
   export default {
     data () {
       return {
-      valid: false,
-
-      email: '',
-      emailRules: [
-        v => !!v || 'Email is required',
-        v => /.+@.+/.test(v) || 'Invalid email',
-
-
-      ],
-      mockAccount: {
-        username: 'dawit',
-        password2: 'passed' },
-      password: '',
-      passwordRules: [
-        v => !!v|| 'Password is needed',
-        v => v.length <= 10 || 'Password must be less than 10 characters'
-      ]
-
-    }
-  },
-    methods:
-    {
-      Loginuser()
-      {router.push('home')}
-
+      username: '',
+      password:'',
+      }
+    },
+    computed: mapGetters ({
+     id: 'id',
+     address: 'address',
+     xxx:'homes'
+   }),
+   methods:
+     {
+       Loginuser()
+       {
+         axios.get('http://localhost:8080/v1/account/login/'+this.username+"&"+this.password)
+         .then (response => {
+ 					if (response.data.status == "success"){this.$router.push('register')}
+            else this.$router.push('/')
+          }
+        )
+      }
     }
 }
 </script>
+<style lang="css">
+</style>
