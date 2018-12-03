@@ -6,7 +6,7 @@
 				<v-toolbar-title>Class Information</v-toolbar-title>
 			</v-toolbar>
 			<v-list three-line subheader>
-				<v-subheader ><b>ClassDocuments</b></v-subheader>
+				<v-subheader><b>ClassDocuments</b></v-subheader>
 				<v-list-tile v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
 					<v-list-tile-content>
 						<v-list-tile-title>{{ item.filename}}</v-list-tile-title>
@@ -17,9 +17,8 @@
 					</v-list-tile-content>
 				</v-list-tile>
 			</v-list>
-			
 			<v-list three-line subheader>
-				<v-subheader ><b>Class Assignment</b></v-subheader>
+				<v-subheader><b>Class Assignment</b></v-subheader>
 				<v-list-tile v-for="item in classAssignmentList" :key="item.fileID" @click="" avatar>
 					<v-list-tile-content>
 						<v-list-tile-title>{{ item.filename}}</v-list-tile-title>
@@ -32,17 +31,26 @@
 			</v-list>
 			<v-list subheader>
 				<v-subheader><b>Class Member</b></v-subheader>
-				<v-list-tile v-for="item in classMemberList" :key= "item.id" @click="" avatar>
+				<v-list-tile v-for="item in classMemberList" :key="item.id" @click="" avatar>
 					<v-list-tile-content>
 						<v-list-tile-sub-title>{{ item.username}}</v-list-tile-sub-title>
-						
 					</v-list-tile-content>
+				</v-list-tile>
+			</v-list>
+			<v-list three-line subheader v-if="isInst">
+				<v-subheader><b>Class Grades</b></v-subheader>
+				<v-list-tile v-for="item in classGradeList" :key="item.id" @click="" avatar>
+					<v-list-tile-content>
+							<v-list-tile-sub-title></v-list-tile-sub-title>
+							<v-list-tile-sub-title>Assignment:{{ item.id}} Name:{{ item.username}} Grade:{{ item.grade}}</v-list-tile-sub-title>
+					</v-list-tile-content>
+					
 				</v-list-tile>
 			</v-list>
 		</div>
 		<div v-else>
 			<v-toolbar-title>Classes</v-toolbar-title>
-			<div v-for="item in classesList" :key = "item.idvalue">
+			<div v-for="item in classesList" :key="item.idvalue">
 				<v-card>
 					<v-img src="https://cdn.vuetifyjs.com/images/cards/desert.jpg" aspect-ratio="2.75"></v-img>
 					<v-card-title primary-title>
@@ -78,6 +86,7 @@ export default {
 			classMemberList: [],
 			classDocumentList: [],
 			classAssignmentList: [],
+			classGradeList: [],
 			classAssignmentListOk: false,
 			classSelected: false,
 			token: 0,
@@ -173,7 +182,15 @@ export default {
 				.get(reqString)
 				.then(response => {
 					if (response.data.status == "success") {
-
+						for (var item in response.data.results) {
+							for (var subitem in item) {
+								this.classMemberList.push([
+									id = item.key,
+									name = subitem.username,
+									grade = subitem.grade
+								])
+							}
+						}
 
 					} else {
 						console.log(" getClassMembers failed")
@@ -213,14 +230,35 @@ export default {
 				.catch(error => (this.classMemberList = []))
 
 		},
+		getGradesAll(cid) {
+			var uid = this.$refs.accounts.getUserID()
+			var token = this.$refs.accounts.getUserToken()
+			var reqString = 'http://localhost:8080/v1/class/get-class-grades/' + uid + "&" + this.classID + "&" + token
+
+			//console.log(reqString)
+			axios
+				.get(reqString)
+				.then(response => {
+					if (response.data.status == "success") {
+
+					} else {
+						console.log(" getGradesAll failed")
+						this.classGradeList = []
+					}
+
+				})
+				.catch(error => (this.classGradeList = []))
+
+		},
 		selectClass(cid) {
 			this.classSelected = true;
 			this.classID = cid;
 
-			
+
 			this.getClassDocumentList(this.classID)
 			this.getClassAssignmentList(this.classID)
 			this.getClassMembers(this.classID)
+			this.getGradesAll(this.classID)
 
 			//this.$root.updateClassInFocus(cid);
 
