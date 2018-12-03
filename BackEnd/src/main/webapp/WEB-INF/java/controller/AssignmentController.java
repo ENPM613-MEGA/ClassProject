@@ -125,7 +125,7 @@ public class AssignmentController {
     /*
     * delete an assignment
     * */
-    @RequestMapping(value = "/delete/{assId}&{uId}&{token}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete/{assId}&{uId}&{token}", method = RequestMethod.POST)
     public Map<String, Object> deleteAssignment(@PathVariable int assId, @PathVariable int uId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
         String errorMessage = "ERROR: ";
