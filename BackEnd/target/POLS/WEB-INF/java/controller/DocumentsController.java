@@ -179,7 +179,7 @@ public class DocumentsController {
     * delete a file, [fileId, userId, token] are required
     *
     * */
-    @RequestMapping(value = "/delete-file/{fId}&{uId}&{token}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete-file/{fId}&{uId}&{token}", method = RequestMethod.POST)
     public Map<String, Object> deleteFile(@PathVariable int fId, @PathVariable int uId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
 
