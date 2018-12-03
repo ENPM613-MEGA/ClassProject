@@ -60,7 +60,7 @@ export default {
 	}),
 	mounted() {
 		this.$refs.sidebarData.setData(this.items)
-		this.$refs.DS.show = false
+		this.$refs.DS.syllabus = true
 	},
 	props: {
 		source: String

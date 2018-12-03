@@ -1,0 +1,9 @@
+[Desktop Entry]
+
+Name=IdeaIU
+Comment=Frank-IDEA-IU
+Exec=/opt/idea-IU-183.4284.148/bin/idea.sh
+Icon=/opt/idea-IU-183.4284.148/bin/idea.png
+Terminal=false
+Type=Application
+

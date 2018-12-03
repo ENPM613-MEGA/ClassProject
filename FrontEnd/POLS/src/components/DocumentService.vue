@@ -2,52 +2,70 @@
 	<div>
 		<AccountServices ref="accounts"></AccountServices>
 		<div v-if="show">
-			<div v-if="this.ableToEdit">
+			<div v-if="syllabus">
+				<div v-if="this.ableToEdit">
+					<div right @click="saveDocument()">
+						<v-btn small color="primary">Save</v-btn>
+					</div>
+					<quill-editor v-model="this.docData.docContent"></quill-editor>
+				</div>
+				<div v-else>
+					<div v-if="this.isInst" right @click="enableEditDocument()">
+						<v-btn small color="primary">edit</v-btn>
+					</div>
+					<div v-html="this.docData.docContent"></div>
+				</div>
+			</div>
+			<div v-else-if="upload">
+				<div>
+					<v-subheader><b>Upload File</b></v-subheader>
+					<v-select v-model="fileDefault" ref="uploadFileType" :items="fileTypes" label="File Type"></v-select>
+					<input type="file" accept="*" class="input-file" ref="fileLoc">
+					<v-btn small color="primary" @click="finishUpload(fileDefault)">Upload</v-btn>
+				</div>
+				<div>
+					<v-subheader><b>Upload Video</b></v-subheader>
+					<v-text-field label="Video Link"></v-text-field>
+					<v-btn small color="primary" @click="finishUploadVideo()">Upload video</v-btn>
+				</div>
+			</div>
+			<div v-else-if="ableToEdit">
 				<div>
 					<v-btn small color="primary" @click="">Save file </v-btn>
 				</div>
 			</div>
 			<div v-else>
-				<v-container>
-					<v-subheader><b>ClassDocuments</b></v-subheader>
-					<div v-if="isInst">
-						<div>
-							<v-btn small color="primary" @click="">Upload File</v-btn>
-						</div>
-					</div>
-					<v-container v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
-						<v-list-tile-content>
-							<h3 class="headline mb-0">{{ item.filename}}</h3>
-							<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
-							<div v-if="isInst">
-								<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
-								<div>
-									<v-btn small color="primary" @click="">view file </v-btn>
-								</div>
-								<div v-if="isInst">
-									<v-btn small color="primary" @click="">delete file </v-btn>
-								</div>
-								<div v-if="isInst">
-									<v-btn small color="primary" @click="">edit file </v-btn>
-								</div>
+				<div v-if="showFile" auto-grow:true>
+					<v-textarea v-model="docData.docContent"  rows="25"></v-textarea>
+					<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
+				</div>
+				<div v-else>
+					<v-container>
+						<v-toolbar-title><b>Class Documents</b></v-toolbar-title>
+						<div v-if="isInst">
+							<div>
+								<v-btn small color="primary" @click="enableUpload()">Upload File</v-btn>
 							</div>
-						</v-list-tile-content>
+						</div>
+						<v-container v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
+							<v-list-tile-content>
+								<h3 class="headline mb-0">{{ item.filename}}</h3>
+								<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
+								<div v-if="isInst">
+									<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
+									<div>
+										<v-btn small color="primary" @click="viewFile(item.fileID)">view file </v-btn>
+									</div>
+									<div v-if="isInst">
+										<v-btn small color="primary" @click="deleteDocument(item.fileID)">delete file </v-btn>
+										<v-btn small color="primary" @click="editFile(item.fileID)">edit file </v-btn>
+										<v-btn small color="primary" @click="changeFileVis(item.fileID, item.filepublish)">change Visibility </v-btn>
+									</div>
+								</div>
+							</v-list-tile-content>
+						</v-container>
 					</v-container>
-				</v-container>
-			</div>
-		</div>
-		<div v-else>
-			<div v-if="this.ableToEdit">
-				<div right @click="saveDocument()">
-					<v-btn small color="primary">Save</v-btn>
 				</div>
-				<quill-editor v-model="docData.docContent"></quill-editor>
-			</div>
-			<div v-else>
-				<div v-if="this.isInst" right @click="enableEditDocument()">
-					<v-btn small color="primary">edit</v-btn>
-				</div>
-				<div v-html="this.docData.docContent"></div>
 			</div>
 		</div>
 	</div>
@@ -70,6 +88,11 @@ export default {
 
 	data() {
 		return {
+			fileTypes: [
+				"syllabus",
+				"file",
+				"test",
+			],
 			docData: {
 				docType: [],
 				docContent: [],
@@ -80,12 +103,16 @@ export default {
 
 			},
 			classDocumentList: [],
+			upload: false,
 
+			syllabus: false,
 			ableToEdit: false,
 			show: true,
 			uid: 1,
 			token: 0,
 			isInst: false,
+			showFile: false,
+			fileDefault: "file"
 		}
 	},
 	methods: {
@@ -93,13 +120,13 @@ export default {
 			if (fid != 0 && this.docData.uid != 0) {
 
 				var reqString = ('http://localhost:8080/v1/document/download-file/' + fid + "&" + this.uid + "&" + this.token)
-				//console.log(reqString)
+				console.log(reqString)
 				axios
 					.get(reqString)
 					.then(response => {
 
 						if (response.status == "200") {
-							//console.log(JSON.stringify(response.headers))
+							//console.log(JSON.stringify(response.data))
 							if (JSON.stringify(response.headers) == "{\"content-type\"\:\"text/html\"}") {
 								//console.log("is html")
 								this.docData.docContent = response.data;
@@ -125,6 +152,8 @@ export default {
 									this.docData.createDate = response.data.createDate;
 									this.docData.publish = response.data.publish;
 								}
+								this.docData.docContent = (response.data);
+
 							}
 
 						} else {
@@ -159,30 +188,84 @@ export default {
 				returnData = false
 			}
 		},
-		createDocument: function(cid, type) {
+		createDocument: function(type, fileaddress) {
 			var returnData = 0;
-			if (this.file != 0 && this.uid != 0 && this.cid != 0) {
 
-				if (type != "video") {
 
-					var data = new FormData();
-					data.append("file", "test");
-					data.append("cId", cid);
-					data.append("uId", this.uid);
-					data.append("type", type);
-					data.append("publish", "true");
-					data.append("token", this.token);
-					var reqString = 'http://localhost:8080/v1/document/upload-file/';
-					console.log(reqString);
-					axios
-						.post(reqString)
-						.then(response => (console.log(response)))
-						.catch(error => (returnData = 0))
-				}
+			if (type != "video") {
 
-			} else {
-				returnData = 0
+				var data = new FormData();
+				data.append("file", fileaddress);
+				data.append("cId", 1);
+				data.append("uId", 1);
+				data.append("type", type);
+				data.append("publish", "true");
+				data.append("token", this.token);
+				var reqString = 'http://localhost:8080/v1/document/upload-file/';
+				console.log(reqString);
+				axios
+					.post(reqString, data, {
+						headers: {
+							'Content-Type': 'multipart/form-data'
+						}
+					})
+					.then(response => {
+						vm.$forceUpdate();
+						this.updateDocumentList()
+					})
+					.catch(error => (returnData = 0))
 			}
+
+
+		},
+		updateDocumentList() {
+			var uid = this.$refs.accounts.getUserID()
+			var token = this.$refs.accounts.getUserToken()
+
+			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + 1 + "&" + uid + "&" + token
+
+
+			axios
+				.get(reqString)
+				.then(response => {
+					if (response.data.status == "success") {
+						this.classDocumentList = {}
+						if (this.isInst) {
+
+							for (var item in response.data.files) {
+
+								this.classDocumentList.push({
+									fileID: (response.data.files[item].id),
+									filename: (response.data.files[item].filename),
+									filetype: (response.data.files[item].type),
+									filepublish: (response.data.files[item].publish)
+								})
+
+							}
+						} else {
+							for (var item in response.data.files) {
+								if (response.data.files[item].publish == true) {
+
+									this.classDocumentList.push({
+										fileID: response.data.files[item].id,
+										filename: response.data.files[item].filename,
+										filetype: response.data.files[item].type,
+									})
+								}
+							}
+						}
+
+
+
+					} else {
+						console.log(" getClassDocumentList failed")
+						this.classDocumentList = []
+					}
+
+				})
+				.catch(error => (this.classDocumentList = []))
+
+
 		},
 		getsyllabus() {
 			var uid = this.$refs.accounts.getUserID()
@@ -243,7 +326,7 @@ export default {
 
 
 		},
-		hideDocument: function(fid, publish_i) {
+		changeFileVis: function(fid, publish_i) {
 			var returnData = false
 			if (this.file != 0 && this.uid != 0 && docData != null) {
 
@@ -251,10 +334,10 @@ export default {
 					.post('http://localhost:8080/v1/document/update-file/', {
 						params: {
 							[uId]: this.uid,
-							[fid]: this.fid,
+							[fid]: fid,
 							[token]: this.token,
-							[data]: docData,
-							[publish]: publish_i,
+							[data]: this.docData.docContent,
+							[publish]: !publish_i,
 
 						}
 					})
@@ -267,24 +350,16 @@ export default {
 		},
 		deleteDocument: function(fid) {
 			var returnData = false
-			if (this.file != 0 && this.uid != 0 && docData != null) {
-
+			if (this.uid != 0 && fid!= 0 ) {
+				var reqString = 'http://localhost:8080/v1/document/delete-file/'+fid+"&"+this.uid+"&"+this.token
+				console.log(reqString);
 				axios
-					.post('http://localhost:8080/v1/document/delete-file/', {
-						params: {
-							[uId]: this.uid,
-							[fid]: this.fid,
-							[token]: this.token,
-							[data]: docData,
-							[publish]: publish_i,
-
-						}
-					})
-					.then(response => (returnData = true))
-					.catch(error => (returnData = false))
+					.delete(reqString)
+					.then(response => (console.log(response.data)))
+					.catch(error => (console.log("failed to delete")))
 
 			} else {
-				returnData = false
+				console.log("cant delete")
 			}
 		},
 		isAvailableForEdit: function() {
@@ -297,7 +372,31 @@ export default {
 		},
 		saveDocument() {
 			this.ableToEdit = false;
-		}
+		},
+		enableUpload() {
+			this.upload = true;
+		},
+		finishUpload(type) {
+			this.upload = false;
+
+			//upload file 
+			this.createDocument(type,this.$refs.fileLoc.files[0])
+			
+		},
+		finishUploadVideo(type) {
+			this.upload = false;
+						//upload file 
+			
+
+		},
+		viewFile(fid) {
+			this.showFile = true
+			this.getDocument(fid);
+
+		},
+		closeFile() {
+			this.showFile = false
+		},
 	},
 	mounted() {
 		//this.getDocument()
