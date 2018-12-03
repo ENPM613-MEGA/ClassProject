@@ -7,7 +7,7 @@
 			</v-toolbar>
 			<v-list three-line subheader>
 				<v-subheader ><b>ClassDocuments</b></v-subheader>
-				<v-list-tile v-for="item in classDocumentList" @click="" avatar>
+				<v-list-tile v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
 					<v-list-tile-content>
 						<v-list-tile-title>{{ item.filename}}</v-list-tile-title>
 						<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
@@ -20,7 +20,7 @@
 			
 			<v-list three-line subheader>
 				<v-subheader ><b>Class Assignment</b></v-subheader>
-				<v-list-tile v-for="item in classAssignmentList" @click="" avatar>
+				<v-list-tile v-for="item in classAssignmentList" :key="item.fileID" @click="" avatar>
 					<v-list-tile-content>
 						<v-list-tile-title>{{ item.filename}}</v-list-tile-title>
 						<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
@@ -32,7 +32,7 @@
 			</v-list>
 			<v-list subheader>
 				<v-subheader><b>Class Member</b></v-subheader>
-				<v-list-tile v-for="item in classMemberList" @click="" avatar>
+				<v-list-tile v-for="item in classMemberList" :key= "item.id" @click="" avatar>
 					<v-list-tile-content>
 						<v-list-tile-sub-title>{{ item.username}}</v-list-tile-sub-title>
 						
@@ -42,7 +42,7 @@
 		</div>
 		<div v-else>
 			<v-toolbar-title>Classes</v-toolbar-title>
-			<template v-for="item in classesList">
+			<div v-for="item in classesList" :key = "item.idvalue">
 				<v-card>
 					<v-img src="https://cdn.vuetifyjs.com/images/cards/desert.jpg" aspect-ratio="2.75"></v-img>
 					<v-card-title primary-title>
@@ -57,7 +57,7 @@
 						<v-btn flat color="orange" @click="selectClass(item.idvalue)">Select</v-btn>
 					</v-card-actions>
 				</v-card>
-			</template>
+			</div>
 		</div>
 	</div>
 </template>
@@ -217,9 +217,12 @@ export default {
 			this.classSelected = true;
 			this.classID = cid;
 
+			
 			this.getClassDocumentList(this.classID)
 			this.getClassAssignmentList(this.classID)
 			this.getClassMembers(this.classID)
+
+			//this.$root.updateClassInFocus(cid);
 
 		}
 
