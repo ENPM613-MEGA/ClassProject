@@ -7,10 +7,7 @@ import domain.Problem;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import utils.JSONHelper;
 import utils.POLSHelper;
 import utils.Validator;
@@ -41,6 +38,7 @@ public class AssignmentController {
     /*
     * create an assignmentf or a class
     * */
+    @CrossOrigin
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Map<String, Object> createAssignment(HttpServletRequest request) {
 
@@ -125,6 +123,7 @@ public class AssignmentController {
     /*
     * delete an assignment
     * */
+    @CrossOrigin
     @RequestMapping(value = "/delete/{assId}&{uId}&{token}", method = RequestMethod.POST)
     public Map<String, Object> deleteAssignment(@PathVariable int assId, @PathVariable int uId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -163,6 +162,7 @@ public class AssignmentController {
     /*
     * Get an assignment
     * */
+    @CrossOrigin
     @RequestMapping(value = "/get-assignment/{assId}&{uId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getAssignment(HttpServletResponse response, @PathVariable int assId, @PathVariable int uId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -222,7 +222,10 @@ public class AssignmentController {
         return mapModel;
     }
 
-
+    /*
+    * Submit an assignment
+    * */
+    @CrossOrigin
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
     public Map<String, Object> submitAssignment(HttpServletRequest request) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -300,6 +303,7 @@ public class AssignmentController {
     * Update an assignment
     * classId cannot be changed
     * */
+    @CrossOrigin
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public Map<String, Object> updateAssignment(HttpServletRequest request) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); //parse format

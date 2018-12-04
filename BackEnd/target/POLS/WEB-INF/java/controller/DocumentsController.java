@@ -36,6 +36,7 @@ public class DocumentsController {
     /*
     *   upload a file to fileSystem, the request should include [token, file, userId, classId, type, (publish)]
     * */
+    @CrossOrigin
     @RequestMapping(value = "/upload-file", method = RequestMethod.POST)
     public Map<String, Object> uploadFile(@RequestParam MultipartFile file, HttpServletRequest request) {
 
@@ -135,6 +136,7 @@ public class DocumentsController {
     /*
     *  upload a video, the request should include [userId, classId, filename, url, token]
     * */
+    @CrossOrigin
     @RequestMapping(value = "/upload-video", method = RequestMethod.POST)
     public Map<String, Object> uploadVideo(HttpServletRequest request) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -179,6 +181,7 @@ public class DocumentsController {
     * delete a file, [fileId, userId, token] are required
     *
     * */
+    @CrossOrigin
     @RequestMapping(value = "/delete-file/{fId}&{uId}&{token}", method = RequestMethod.POST)
     public Map<String, Object> deleteFile(@PathVariable int fId, @PathVariable int uId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -214,6 +217,7 @@ public class DocumentsController {
      * download a file from server, requires [token, fileId, userId]
      *
      * */
+    @CrossOrigin
     @RequestMapping(value = "/download-file/{fId}&{uId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> downloadFile(@PathVariable int fId, @PathVariable int uId, @PathVariable String token,
                              HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -264,6 +268,7 @@ public class DocumentsController {
     * edit the visibility (publish attribute) of document
     *
     * */
+    @CrossOrigin
     @RequestMapping(value = "/update-document", method = RequestMethod.POST)
     public Map<String, Object> updateFile(HttpServletRequest request) {
 

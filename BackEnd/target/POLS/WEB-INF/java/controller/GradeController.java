@@ -8,10 +8,7 @@ import domain.Account;
 import domain.Grade;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import utils.JSONHelper;
 import utils.POLSHelper;
 import utils.Validator;
@@ -62,6 +59,7 @@ public class GradeController {
      * @param
      * @return mapModel.
      */
+    @CrossOrigin
     @RequestMapping(value = "/get-grade/{uId}&{assId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getGrade(@PathVariable int uId, @PathVariable int assId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -87,6 +85,7 @@ public class GradeController {
      * @param
      * @return mapModel.
      */
+    @CrossOrigin
     @RequestMapping(value = "/update-grade", method = RequestMethod.POST)
     public Map<String, Object> updateGrade(HttpServletRequest rq) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -111,6 +110,7 @@ public class GradeController {
     /*
     * get grades of a student for a specific class
     * */
+    @CrossOrigin
     @RequestMapping(value = "/get-student-grades/{uId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getStudentGrades(@PathVariable int uId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();

@@ -47,6 +47,7 @@ public class AccountController {
     * take the [username, passwd] as parameters,
     * query for the account info by the username, and compare the passwd
     * */
+    @CrossOrigin
     @RequestMapping(value = "/login/{username}&{passwd}", method = RequestMethod.GET)
     public Map<String, Object> login(@PathVariable String username, @PathVariable String passwd) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -92,6 +93,7 @@ public class AccountController {
     * register a new account
     * the [username, passwd, gender, role] are required
     * */
+    @CrossOrigin
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> registerNewAccount(@RequestBody Account.AccountBuilder accountBuilder) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -121,6 +123,7 @@ public class AccountController {
     * Update [passwd, email, birth, addr, colorBlind]
     * Overwrite the original account data
     * */
+    @CrossOrigin
     @RequestMapping(value = "/update-account", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> updateAccount(HttpServletRequest request) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -155,6 +158,7 @@ public class AccountController {
     /*
     * Update [points] of a specific account based on its [id]
     * */
+    @CrossOrigin
     @RequestMapping(value = "/update-point", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> updatePointOfAccount(HttpServletRequest rq) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -182,6 +186,7 @@ public class AccountController {
     /*
     * Get account by userId
     * */
+    @CrossOrigin
     @RequestMapping(value = "/get-account/{uId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getAccountById(@PathVariable int uId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();

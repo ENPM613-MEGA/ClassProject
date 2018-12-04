@@ -4,10 +4,7 @@ import DAO.*;
 import domain.Assignment;
 import domain.POLSClass;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import utils.POLSHelper;
 import utils.Validator;
 
@@ -47,6 +44,7 @@ public class ClassController {
     /*
      * get file list of a class
      * */
+    @CrossOrigin
     @RequestMapping(value = "/get-class-files/{cId}&{uId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getClassFilesList(@PathVariable int cId, @PathVariable int uId, @PathVariable String token) {
 
@@ -72,6 +70,7 @@ public class ClassController {
     /*
     * get student list of a class
     * */
+    @CrossOrigin
     @RequestMapping(value = "/get-class-students/{cId}&{uId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getClassStudentsList(@PathVariable int cId, @PathVariable int uId, @PathVariable String token) {
 
@@ -99,6 +98,7 @@ public class ClassController {
     /*
      * get all students grades of a class
      * */
+    @CrossOrigin
     @RequestMapping(value = "/get-class-grades/{uId}&{cId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getClassGrades(@PathVariable int uId, @PathVariable int cId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -140,6 +140,7 @@ public class ClassController {
     /*
      * Get assignments of a class
      * */
+    @CrossOrigin
     @RequestMapping(value = "/get-class-assignments-list/{uId}&{cId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getClassAssignmentsList(@PathVariable int uId, @PathVariable int cId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -175,6 +176,7 @@ public class ClassController {
     /*
     * Get the class that the user enrolled in (instructor / student)
     * */
+    @CrossOrigin
     @RequestMapping(value = "/get-class-list/{uId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getClassListOfUser(@PathVariable int uId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();
@@ -198,6 +200,7 @@ public class ClassController {
     /*
     * Get a class by classId
     * */
+    @CrossOrigin
     @RequestMapping(value = "/get-class/{uId}&{cId}&{token}", method = RequestMethod.GET)
     public Map<String, Object> getClassById(@PathVariable int uId, @PathVariable int cId, @PathVariable String token) {
         Map<String, Object> mapModel = new HashMap<>();

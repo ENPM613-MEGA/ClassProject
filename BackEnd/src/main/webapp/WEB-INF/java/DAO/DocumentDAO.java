@@ -20,7 +20,7 @@ public class DocumentDAO {
     };
 
     private final String INSER_A_DOCUMENT = "INSERT INTO Documents " +
-                                            "(c_id, filename, type, path, create_date, publish)" +
+                                            "(c_id, filename, type, path, create_date, publish) " +
                                             "VALUES (?, ?, ?, ?, ?, ?)";
     /*
     * create new Document record in db,
