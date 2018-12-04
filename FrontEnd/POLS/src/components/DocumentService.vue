@@ -214,18 +214,18 @@ export default {
 				data.append("publish", "true");
 				data.append("token", this.token);
 				var reqString = 'http://localhost:8080/v1/document/upload-file/';
-				console.log(reqString);
+				//console.log(reqString);
 				axios
 					.post(reqString, data, {
 						headers: {
 							'Content-Type': 'multipart/form-data'
+
 						}
 					})
 					.then(response => {
 						console.log("upload file ok")
+						location.reload(); 
 						
-						this.updateDocumentList()
-
 					})
 					.catch(error => (console.log("upload file failed")))
 			} else {
@@ -235,7 +235,7 @@ export default {
 				data.append("cId", 1);
 				data.append("uId", 1);
 				data.append("type", "video");
-				data.append("videoName", "");
+				data.append("videoName", "  ");
 				data.append("url", fileaddress);
 				var reqString = 'http://localhost:8080/v1/document/upload-file/';
 				console.log(reqString);
@@ -247,8 +247,8 @@ export default {
 					})
 					.then(response => {
 						console.log("create video ok")
-						vm.$forceUpdate();
-						this.updateDocumentList()
+						location.reload(); 
+						
 					})
 					.catch(error => (console.log("create video failed")))
 
@@ -366,21 +366,26 @@ export default {
 		},
 		changeFileVis: function(fid, publish_i) {
 			var returnData = false
-			if (this.file != 0 && this.uid != 0 && docData != null) {
+			if ( this.uid != 0 ) {
 
+
+				var data = new FormData();
+				data.append("uId", this.uid);
+				data.append("fId", fid);
+				data.append("token", 0);
+				data.append("publish", !publish_i);
+				console.log(data)
 				axios
-					.post('http://localhost:8080/v1/document/update-file/', {
-						params: {
-							[uId]: this.uid,
-							[fid]: fid,
-							[token]: this.token,
-							[data]: this.docData.docContent,
-							[publish]: !publish_i,
-
+					.post('http://localhost:8080/v1/document/update-file/', data, {
+						headers: {
+							'Content-Type': 'multipart/form-data'
 						}
 					})
-					.then(response => (returnData = true))
-					.catch(error => (returnData = false))
+					.then(response => {
+						console.log("changed Visibility")
+
+					})
+					.catch(error => (console.log("failed To change")))
 
 			} else {
 				returnData = false
@@ -392,8 +397,13 @@ export default {
 				var reqString = 'http://localhost:8080/v1/document/delete-file/' + fid + "&" + this.uid + "&" + this.token
 				console.log(reqString);
 				axios
-					.delete(reqString)
-					.then(response => (console.log(response.data)))
+					.post(reqString)
+					.then(response => {
+
+						console.log(response.data)
+
+						location.reload(); 
+					})
 					.catch(error => (console.log("failed to delete")))
 
 			} else {
