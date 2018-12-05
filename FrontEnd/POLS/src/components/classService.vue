@@ -36,6 +36,7 @@
 					</v-list-tile-content>
 				</v-list-tile>
 			</v-list>
+			<div v-if="isInst">
 			<v-list subheader>
 				<v-subheader><b>Class Member</b></v-subheader>
 				<v-list-tile v-for="item in classMemberList" :key="item.id" @click="" avatar>
@@ -54,6 +55,7 @@
 					
 				</v-list-tile>
 			</v-list>
+			</div>
 		</div>
 		<div v-else>
 			<v-toolbar-title>Classes</v-toolbar-title>
@@ -68,9 +70,16 @@
 							</div>
 						</div>
 					</v-card-title>
+					<div v-if="colorBlind">
+					<v-card-actions>
+						<v-btn flat color="blue" @click="selectClass(item.idvalue)">Select</v-btn>
+					</v-card-actions>
+					</div>
+					<div v-else>
 					<v-card-actions>
 						<v-btn flat color="orange" @click="selectClass(item.idvalue)">Select</v-btn>
 					</v-card-actions>
+					</div>
 				</v-card>
 			</div>
 		</div>
@@ -79,11 +88,12 @@
 <script>
 import AccountServices from '@/components/AccountServices'
 import axios from 'axios'
-
+import Vuex from 'vuex';
 export default {
 	components: {
 		axios,
-		AccountServices
+		AccountServices,
+		Vuex
 	},
 
 	data() {
@@ -131,7 +141,7 @@ export default {
 			}
 		},
 		getClassDocumentList(cid) {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 
 			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + cid + "&" + uid + "&" + token
@@ -173,7 +183,7 @@ export default {
 				.catch(error => (this.classDocumentList = []))
 		},
 		addClassDocument(cid, aid) {
-						var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 
 			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + cid + "&" + uid + "&" + token
@@ -215,7 +225,7 @@ export default {
 				.catch(error => (this.classDocumentList = []))
 		},
 		removeClassDocument(cid, aid) {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 
 			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + cid + "&" + uid + "&" + token
@@ -233,7 +243,7 @@ export default {
 				.catch(error => (this.classDocumentList = []))
 		},
 		getClassAssignmentList(cid) {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 			var reqString = 'http://localhost:8080/v1/class/get-class-assignments-list/' + uid + "&" + this.classID + "&" + token
 
@@ -290,7 +300,7 @@ export default {
 
 		},
 		getGradesAll(cid) {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.idthis.$refs.accounts.getUserID()
 			var token = this.$refs.accounts.getUserToken()
 			var reqString = 'http://localhost:8080/v1/class/get-class-grades/' + uid + "&" + this.classID + "&" + token
 
@@ -316,37 +326,34 @@ export default {
 
 			this.getClassDocumentList(this.classID)
 			this.getClassAssignmentList(this.classID)
-			this.getClassMembers(this.classID)
-			this.getGradesAll(this.classID)
+			if (this.isInst) {
+				this.getClassMembers(this.classID)
+				this.getGradesAll(this.classID)
+			}
 
 			//this.$root.updateClassInFocus(cid);
 
 		},
 		getColorBlindMode() {
-			var uid = this.$refs.accounts.getUserID()
-			var token = this.$refs.accounts.getUserToken()
-			var reqString = 'http://localhost:8080/v1/account/get-account/' + uid + "&" + token
-			axios
-				.get(reqString)
-				.then(response => {
-					//console.log(response);
-					if (response.data.status == "success") {
-						this.colorBlind = response.data.account.colorBlind;
-					} else {
-						console.log("failed in colorBlind Mode")
-					}
 
-				})
-				.catch(error => (console.log(error)))
+			this.colorBlind = this.$store.state.userProfile.colorBlind
+			console.log(this.colorBlind)
+
 		}
 
 	},
 	mounted() {
-		var uid = this.$refs.accounts.getUserID()
-		var token = this.$refs.accounts.getUserToken()
+		var uid = this.$store.state.userProfile.id
+		var token = 11;
 		this.getClasses(uid, token)
-		this.isInst = this.$refs.accounts.isInstructor()
+		if (this.$store.state.userProfile == "instructor") {
+			this.isInst = true	
+		}else{
+			this.isInst = false
+		}
+		
 		this.getColorBlindMode()
+		console.log(this.$store.state.userProfile)
 	},
 
 }

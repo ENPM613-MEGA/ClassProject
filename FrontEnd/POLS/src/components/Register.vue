@@ -152,7 +152,7 @@
        if (response.data.status == "success")
          {
 
-           this.$store.state.userProfile.push(response.data.userProfile),
+           this.$store.state.userProfile=response.data.userProfile,
            this.$store.state.status = response.data.status,
            this.$store.state.token = response.data.token,
 

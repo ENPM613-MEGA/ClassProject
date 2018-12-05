@@ -13,7 +13,8 @@ Vue.use(Vuex);
        classes:[],
        userProfile:[],
        status:'',
-       token:''
+       token:'',
+       loginedIn:false
      },
 
      getters:

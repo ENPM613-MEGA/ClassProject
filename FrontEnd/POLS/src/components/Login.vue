@@ -79,9 +79,10 @@ import {mapGetters} from 'vuex';
 
             this.$store.state.assignmentLists.push(response.data.assignmentLists[0]),
             this.$store.state.classes.push(response.data.classes[0]),
-            this.$store.state.userProfile.push(response.data.userProfile),
+            this.$store.state.userProfile = (response.data.userProfile),
             this.$store.state.status = response.data.status,
             this.$store.state.token = response.data.token,
+            this.$store.state.loginedIn = true,
 
             this.$router.push('classes')
           }

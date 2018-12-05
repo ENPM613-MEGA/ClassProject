@@ -152,9 +152,11 @@
 <script>
 import axios from 'axios';
 import AccountServices from '@/components/AccountServices'
+import Vuex from 'vuex';
 export default {
 	components: {
 		AccountServices,
+		Vuex
 	},
 
 	methods: {
@@ -162,13 +164,14 @@ export default {
 			this.items = itemsList
 		},
 		getColorBlindMode() {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 			var reqString = 'http://localhost:8080/v1/account/get-account/' + uid + "&" + token
+			console.log(reqString);
 			axios
 				.get(reqString)
 				.then(response => {
-					console.log(response);
+					//console.log(response);
 					if (response.data.status == "success") {
 						this.colorBlind = response.data.account.colorBlind;
 					} else {
@@ -185,6 +188,7 @@ export default {
 		items: [],
 	}),
 	mounted() {
+		var uid = this.$store.state.userProfile.id
 		this.getColorBlindMode()
 	}
 }

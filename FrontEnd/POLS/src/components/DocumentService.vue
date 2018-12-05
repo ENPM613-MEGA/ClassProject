@@ -1,5 +1,6 @@
 <template>
 	<div>
+
 		<AccountServices ref="accounts"></AccountServices>
 		<div v-if="colorBlind">
 			<div v-if="show">
@@ -162,6 +163,9 @@ import { quillEditor } from 'vue-quill-editor'
 import AccountServices from '@/components/AccountServices'
 import Vue from 'vue'
 import VueYoutube from 'vue-youtube'
+import Vuex from 'vuex';
+import Router from 'vue-router'
+
 Vue.use(VueYoutube)
 export default {
 
@@ -169,7 +173,8 @@ export default {
 		axios,
 		quillEditor,
 		AccountServices,
-		VueYoutube
+		VueYoutube,
+		Vuex
 	},
 
 	data() {
@@ -281,7 +286,7 @@ export default {
 		},
 		createDocument: function(type, fileaddress) {
 			var returnData = 0;
-			var uid = this.$refs.accounts.getUserID();
+			var uid = this.$store.state.userProfile.id;
 
 			if (type != "video") {
 
@@ -303,7 +308,7 @@ export default {
 					})
 					.then(response => {
 						console.log("upload file ok")
-						location.reload();
+						
 
 					})
 					.catch(error => (console.log("upload file failed")))
@@ -331,7 +336,7 @@ export default {
 					})
 					.then(response => {
 						console.log("create video ok")
-						location.reload();
+						
 
 					})
 					.catch(error => (console.log(error)))
@@ -341,7 +346,7 @@ export default {
 
 		},
 		updateDocumentList() {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 
 			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + 1 + "&" + uid + "&" + token
@@ -392,7 +397,7 @@ export default {
 
 		},
 		getsyllabus() {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 
 			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + 1 + "&" + uid + "&" + token
@@ -452,7 +457,7 @@ export default {
 		},
 		changeFileVis: function(fid, publish_i) {
 			var returnData = false
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			if (uid != 0) {
 
 
@@ -481,10 +486,11 @@ export default {
 					})
 					.then(response => {
 						console.log("changed Visibility")
-						location.reload();
+						this.updateDocumentList()
+
 
 					})
-					.catch(error => (console.log("failed To change")))
+					.catch(error => (console.log(error)))
 
 			} else {
 				returnData = false
@@ -492,7 +498,7 @@ export default {
 		},
 		deleteDocument: function(fid) {
 			var returnData = false
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			if (uid != 0 && fid != 0) {
 				var reqString = 'http://localhost:8080/v1/document/delete-file/' + fid + "&" + this.uid + "&" + this.token
 				console.log(reqString);
@@ -502,7 +508,7 @@ export default {
 
 						console.log(response.data)
 
-						location.reload();
+						router.push("Classes")
 					})
 					.catch(error => (console.log("failed to delete")))
 
@@ -557,7 +563,7 @@ export default {
 			console.log('\o/ we are watching!!!')
 		},
 		getColorBlindMode(){
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 			var reqString = 'http://localhost:8080/v1/account/get-account/' + uid + "&" + token
 				axios
@@ -577,7 +583,7 @@ export default {
 	mounted() {
 		//this.getDocument()
 		this.getsyllabus()
-		this.isInst = this.$refs.accounts.isInstructor()
+		this.isInst = this.$store.state.userProfile.colorBlind
 		this.getColorBlindMode();
 	},
 	computed: {
