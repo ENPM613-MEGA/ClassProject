@@ -2,9 +2,16 @@
 	<div>
 		<AccountServices ref="accounts"></AccountServices>
 		<div v-if="classSelected">
-			<v-toolbar color="teal" dark>
+			<div v-if="colorBlind">
+			<v-toolbar color="grey" dark>
 				<v-toolbar-title>Class Information</v-toolbar-title>
 			</v-toolbar>
+			</div>
+			<div v-else>
+			<v-toolbar color="teal" dark>
+				<v-toolbar-title>Class Information</v-toolbar-title>
+			</v-toolbar>	
+			</div>
 			<v-list three-line subheader>
 				<v-subheader><b>ClassDocuments</b></v-subheader>
 				<v-list-tile v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
@@ -90,14 +97,12 @@ export default {
 			classAssignmentListOk: false,
 			classSelected: false,
 			token: 0,
-			isInst: false
+			isInst: false,
+			colorBlind: false
 		}
 	},
 
 	methods: {
-		addClasses() {
-
-		},
 		getClasses(uid, token) {
 			if (uid > 0 && token > 0) {
 				var reqString = 'http://localhost:8080/v1/class/get-class-list/' + uid + "&" + token
@@ -168,10 +173,64 @@ export default {
 				.catch(error => (this.classDocumentList = []))
 		},
 		addClassDocument(cid, aid) {
+						var uid = this.$refs.accounts.getUserID()
+			var token = this.$refs.accounts.getUserToken()
 
+			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + cid + "&" + uid + "&" + token
+
+			axios
+				.get(reqString)
+				.then(response => {
+					if (response.data.status == "success") {
+						if (this.isInst) {
+
+							for (var item in response.data.files) {
+
+								this.classDocumentList.push({
+									fileID: response.data.files[item].id,
+									filename: response.data.files[item].filename,
+									filetype: response.data.files[item].type,
+									filepublish: response.data.files[item].publish
+								})
+							}
+						} else {
+							for (var item in response.data.files) {
+								if (response.data.files[item].publish == true) {
+
+									this.classDocumentList.push({
+										fileID: response.data.files[item].id,
+										filename: response.data.files[item].filename,
+										filetype: response.data.files[item].type,
+									})
+								}
+							}
+						}
+
+					} else {
+						console.log(" getClassDocumentList failed")
+						this.classDocumentList = []
+					}
+
+				})
+				.catch(error => (this.classDocumentList = []))
 		},
 		removeClassDocument(cid, aid) {
+			var uid = this.$refs.accounts.getUserID()
+			var token = this.$refs.accounts.getUserToken()
 
+			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + cid + "&" + uid + "&" + token
+
+			axios
+				.get(reqString)
+				.then(response => {
+					if (response.data.status == "success") {
+
+					} else {
+
+					}
+
+				})
+				.catch(error => (this.classDocumentList = []))
 		},
 		getClassAssignmentList(cid) {
 			var uid = this.$refs.accounts.getUserID()
@@ -262,6 +321,23 @@ export default {
 
 			//this.$root.updateClassInFocus(cid);
 
+		},
+		getColorBlindMode() {
+			var uid = this.$refs.accounts.getUserID()
+			var token = this.$refs.accounts.getUserToken()
+			var reqString = 'http://localhost:8080/v1/account/get-account/' + uid + "&" + token
+			axios
+				.get(reqString)
+				.then(response => {
+					//console.log(response);
+					if (response.data.status == "success") {
+						this.colorBlind = response.data.account.colorBlind;
+					} else {
+						console.log("failed in colorBlind Mode")
+					}
+
+				})
+				.catch(error => (console.log(error)))
 		}
 
 	},
@@ -270,7 +346,9 @@ export default {
 		var token = this.$refs.accounts.getUserToken()
 		this.getClasses(uid, token)
 		this.isInst = this.$refs.accounts.isInstructor()
-	}
+		this.getColorBlindMode()
+	},
+
 }
 
 </script>

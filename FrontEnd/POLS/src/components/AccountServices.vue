@@ -21,6 +21,7 @@ export default {
 			},
 			instructor: true,
 			loggedin: false,
+			colorBlind: true,
 
 			uid: 1,
 			token: 99999,
@@ -44,10 +45,10 @@ export default {
 			return this.uid;
 		},
 		setColorBlindMode() {
-
+			
 		},
 		getColorBlindMode() {
-
+			return this.colorBlind;
 		},
 		getAddress() {
 
