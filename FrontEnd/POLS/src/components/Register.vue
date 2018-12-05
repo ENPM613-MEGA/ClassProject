@@ -106,7 +106,8 @@
 <script>
   import axios from 'axios'
   import {mapGetters} from 'vuex'
-  export default {
+  export default
+  {
     data: () => ({
       valid: false,
       username:'',
@@ -133,18 +134,39 @@
       {
         let newuser =
         {
-          username: this.userName,
-          passwd: this.passwd,
-          gender: this.gender,
-          role: this.role,
-          birth: this.birth,
-          points: this.points,
-          address: this.address,
-          email: this.email,
-          colorBlind: this.colorBlind
+          "username":this.username,
+          "passwd":this.passwd,
+          "gender":this.gender,
+          "role":this.role,
+          "birth":this.birth,
+          "points":this.points,
+          "address":this.address,
+          "email":this.email,
+          "colorBlind":this.colorBlind
         }
-        this.$store.dispatch('Register',newuser)
+      axios.post('http://localhost:8080/v1/account/register',
+      newuser,
+      { headers: {'Content-Type': 'application/json;charset=UTF-8' }})
+
+      .then (response => {
+       if (response.data.status == "success")
+         {
+
+           this.$store.state.userProfile=response.data.userProfile,
+           this.$store.state.status = response.data.status,
+           this.$store.state.token = response.data.token,
+
+           this.$router.push('AfterLogin')
+         }
+       else	if (response.data.status == "failure")
+        {
+          this.$store.state.status = response.data.status
+          
+        }
+      }
+    )
       }
     }
   }
+
 </script>

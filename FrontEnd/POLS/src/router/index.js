@@ -11,6 +11,7 @@ import Grades from '@/components/Grades'
 import Modules from '@/components/Modules'
 import Classes from '@/components/Classes'
 
+
 import Vuetify from 'vuetify'
 import axios from 'axios'
 
@@ -31,6 +32,7 @@ export default new Router({
         name: "register",
         component: Register
       },
+
       {
         path: "/login",
         name: "login",

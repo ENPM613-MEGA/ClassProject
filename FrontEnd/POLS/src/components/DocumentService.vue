@@ -1,76 +1,158 @@
 <template>
 	<div>
+
 		<AccountServices ref="accounts"></AccountServices>
-		<div v-if="show">
-			<div v-if="syllabus">
-				<div v-if="ableToEdit">
+		<div v-if="colorBlind">
+			<div v-if="show">
+				<div v-if="syllabus">
+					<div v-if="ableToEdit">
+						<div right @click="saveDocument()">
+							<v-btn small color="red">Save</v-btn>
+						</div>
+						<quill-editor v-model="docData.docContent"></quill-editor>
+					</div>
+					<div v-else>
+						<div v-if="isInst" right @click="enableEditDocument()">
+							<v-btn small color="red">edit</v-btn>
+						</div>
+						<div v-html="docData.docContent"></div>
+					</div>
+				</div>
+				<div v-else-if="upload">
+					<div>
+						<v-subheader><b>Upload File</b></v-subheader>
+						<v-select v-model="fileDefault" ref="uploadFileType" :items="fileTypes" label="File Type"></v-select>
+						<input type="file" accept="*" class="input-file" ref="fileLoc">
+						<v-btn small color="red" @click="finishUpload(fileDefault)">Upload</v-btn>
+					</div>
+					<div>
+						<v-subheader><b>Upload Video</b></v-subheader>
+						<v-text-field label="Video Link" v-model="url"></v-text-field>
+						<v-text-field label="Video Name" v-model="videoName"></v-text-field>
+						<v-btn small color="red" @click="finishUploadVideo()">Upload video</v-btn>
+					</div>
+				</div>
+				<div v-else-if="ableToEdit">
+					<div right @click="saveDocument()">
+						<v-btn small color="red">Save</v-btn>
+					</div>
+					<quill-editor v-model="docData.docContent"></quill-editor>
+				</div>
+				<div v-else>
+					<div v-if="showFile" auto-grow:true>
+						<div v-if="docData.isVideo">
+							<youtube :video-id="docData.videoId" ref="youtube" @playing="playing"></youtube>
+							<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
+						</div>
+						<div v-else>
+							<v-textarea v-model="docData.docContent" rows="25"></v-textarea>
+							<v-btn small color="red" @click="closeFile()">Close file </v-btn>
+						</div>
+					</div>
+					<div v-else>
+						<v-container>
+							<v-toolbar-title><b>Class Documents</b></v-toolbar-title>
+							<div v-if="isInst">
+								<div>
+									<v-btn small color="red" @click="enableUpload()">Upload File</v-btn>
+								</div>
+							</div>
+							<v-container v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
+								<v-list-tile-content>
+									<h3 class="headline mb-0">{{ item.filename}}</h3>
+									<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
+									<div v-if="isInst">
+										<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
+										<div>
+											<v-btn small color="red" @click="viewFile(item.fileID)">view file </v-btn>
+										</div>
+										<div v-if="isInst">
+											<v-btn small color="red" @click="deleteDocument(item.fileID)">delete file </v-btn>
+											<v-btn small color="red" @click="editFile(item.fileID)">edit file </v-btn>
+											<v-btn small color="red" @click="changeFileVis(item.fileID, item.filepublish)">change Visibility </v-btn>
+										</div>
+									</div>
+								</v-list-tile-content>
+							</v-container>
+						</v-container>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div v-else>
+			<div v-if="show">
+				<div v-if="syllabus">
+					<div v-if="ableToEdit">
+						<div right @click="saveDocument()">
+							<v-btn small color="primary">Save</v-btn>
+						</div>
+						<quill-editor v-model="docData.docContent"></quill-editor>
+					</div>
+					<div v-else>
+						<div v-if="isInst" right @click="enableEditDocument()">
+							<v-btn small color="primary">edit</v-btn>
+						</div>
+						<div v-html="docData.docContent"></div>
+					</div>
+				</div>
+				<div v-else-if="upload">
+					<div>
+						<v-subheader><b>Upload File</b></v-subheader>
+						<v-select v-model="fileDefault" ref="uploadFileType" :items="fileTypes" label="File Type"></v-select>
+						<input type="file" accept="*" class="input-file" ref="fileLoc">
+						<v-btn small color="primary" @click="finishUpload(fileDefault)">Upload</v-btn>
+					</div>
+					<div>
+						<v-subheader><b>Upload Video</b></v-subheader>
+						<v-text-field label="Video Link" v-model="url"></v-text-field>
+						<v-text-field label="Video Name" v-model="videoName"></v-text-field>
+						<v-btn small color="primary" @click="finishUploadVideo()">Upload video</v-btn>
+					</div>
+				</div>
+				<div v-else-if="ableToEdit">
 					<div right @click="saveDocument()">
 						<v-btn small color="primary">Save</v-btn>
 					</div>
 					<quill-editor v-model="docData.docContent"></quill-editor>
 				</div>
 				<div v-else>
-					<div v-if="isInst" right @click="enableEditDocument()">
-						<v-btn small color="primary">edit</v-btn>
-					</div>
-					<div v-html="docData.docContent"></div>
-				</div>
-			</div>
-			<div v-else-if="upload">
-				<div>
-					<v-subheader><b>Upload File</b></v-subheader>
-					<v-select v-model="fileDefault" ref="uploadFileType" :items="fileTypes" label="File Type"></v-select>
-					<input type="file" accept="*" class="input-file" ref="fileLoc">
-					<v-btn small color="primary" @click="finishUpload(fileDefault)">Upload</v-btn>
-				</div>
-				<div>
-					<v-subheader><b>Upload Video</b></v-subheader>
-					<v-text-field label="Video Link" v-model="url"></v-text-field>
-					<v-btn small color="primary" @click="finishUploadVideo()">Upload video</v-btn>
-				</div>
-			</div>
-			<div v-else-if="ableToEdit">
-				<div right @click="saveDocument()">
-					<v-btn small color="primary">Save</v-btn>
-				</div>
-				<quill-editor v-model="docData.docContent"></quill-editor>
-			</div>
-			<div v-else>
-				<div v-if="showFile" auto-grow:true>
-					<div v-if="docData.isVideo">
-						<youtube :video-id="videoId" ref="youtube" @playing="playing"></youtube>
+					<div v-if="showFile" auto-grow:true>
+						<div v-if="docData.isVideo">
+							<youtube :video-id="docData.videoId" ref="youtube" @playing="playing"></youtube>
+							<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
+						</div>
+						<div v-else>
+							<v-textarea v-model="docData.docContent" rows="25"></v-textarea>
+							<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
+						</div>
 					</div>
 					<div v-else>
-						<v-textarea v-model="docData.docContent" rows="25"></v-textarea>
-						<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
-					</div>
-				</div>
-				<div v-else>
-					<v-container>
-						<v-toolbar-title><b>Class Documents</b></v-toolbar-title>
-						<div v-if="isInst">
-							<div>
-								<v-btn small color="primary" @click="enableUpload()">Upload File</v-btn>
-							</div>
-						</div>
-						<v-container v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
-							<v-list-tile-content>
-								<h3 class="headline mb-0">{{ item.filename}}</h3>
-								<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
-								<div v-if="isInst">
-									<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
-									<div>
-										<v-btn small color="primary" @click="viewFile(item.fileID)">view file </v-btn>
-									</div>
-									<div v-if="isInst">
-										<v-btn small color="primary" @click="deleteDocument(item.fileID)">delete file </v-btn>
-										<v-btn small color="primary" @click="editFile(item.fileID)">edit file </v-btn>
-										<v-btn small color="primary" @click="changeFileVis(item.fileID, item.filepublish)">change Visibility </v-btn>
-									</div>
+						<v-container>
+							<v-toolbar-title><b>Class Documents</b></v-toolbar-title>
+							<div v-if="isInst">
+								<div>
+									<v-btn small color="primary" @click="enableUpload()">Upload File</v-btn>
 								</div>
-							</v-list-tile-content>
+							</div>
+							<v-container v-for="item in classDocumentList" :key="item.fileID" @click="" avatar>
+								<v-list-tile-content>
+									<h3 class="headline mb-0">{{ item.filename}}</h3>
+									<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
+									<div v-if="isInst">
+										<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
+										<div>
+											<v-btn small color="primary" @click="viewFile(item.fileID)">view file </v-btn>
+										</div>
+										<div v-if="isInst">
+											<v-btn small color="primary" @click="deleteDocument(item.fileID)">delete file </v-btn>
+											<v-btn small color="primary" @click="editFile(item.fileID)">edit file </v-btn>
+											<v-btn small color="primary" @click="changeFileVis(item.fileID, item.filepublish)">change Visibility </v-btn>
+										</div>
+									</div>
+								</v-list-tile-content>
+							</v-container>
 						</v-container>
-					</v-container>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -85,6 +167,9 @@ import { quillEditor } from 'vue-quill-editor'
 import AccountServices from '@/components/AccountServices'
 import Vue from 'vue'
 import VueYoutube from 'vue-youtube'
+import Vuex from 'vuex';
+import Router from 'vue-router'
+
 Vue.use(VueYoutube)
 export default {
 
@@ -92,7 +177,9 @@ export default {
 		axios,
 		quillEditor,
 		AccountServices,
-		VueYoutube
+		VueYoutube,
+		Vuex,
+		Router
 	},
 
 	data() {
@@ -111,11 +198,14 @@ export default {
 				classID: 0,
 				createDate: 0,
 				isVideo: false,
-				videoId: 'lG0Ys-2d4MA',
+				videoId: '',
 
 			},
+			colorBlind: false,
 			classDocumentList: [],
 			upload: false,
+
+			videoName:"test",
 
 			syllabus: false,
 			ableToEdit: false,
@@ -139,33 +229,27 @@ export default {
 					.then(response => {
 
 						if (response.status == "200") {
-							//console.log(JSON.stringify(response.data))
+							console.log(JSON.stringify(response.data))
 							if (JSON.stringify(response.headers) == "{\"content-type\"\:\"text/html\"}") {
 								//console.log("is html")
 								this.docData.docContent = response.data;
 
 							} else {
 
-								if (response.data.filename == "video") {
+								
+									
+									
+							
+								this.docData.docContent = (response.data)
+								if (JSON.stringify(this.docData.docContent).includes("https://www.youtube.com/")) {
 									console.log("is video")
-									this.docData.fid = response.data.id;
-									this.docData.classID = response.data.classId;
-									this.docData.fileName = response.data.filename;
-									this.docData.docType = response.data.type;
-									this.docData.docContent = response.data.path;
-									this.docData.createDate = response.data.createDate;
-									this.docData.publish = response.data.publish;
-								} else {
+									this.docData.isVideo = true;
+									this.docContent = this.docData.docContent.document.path;
+									this.docData.videoId = this.docData.docContent.document.path.substring(32, this.docData.docContent.document.path.length)
+								}else{
+									this.docData.isVideo = false;
 									console.log("is not video")
-									this.docData.fid = response.data.id;
-									this.docData.classID = response.data.classId;
-									this.docData.fileName = response.data.filename;
-									this.docData.docContent = (response.data);
-									this.docData.docContent = response.data.path;
-									this.docData.createDate = response.data.createDate;
-									this.docData.publish = response.data.publish;
 								}
-								this.docData.docContent = (response.data);
 
 							}
 
@@ -178,7 +262,7 @@ export default {
 					})
 					.catch(error => {
 
-						console.log("bad at getting document")
+						console.log(error)
 					})
 
 				//console.log("finished request")
@@ -201,9 +285,9 @@ export default {
 				returnData = false
 			}
 		},
-		createDocument: function(type, fileaddress) {
+		createDocument: function(type, fileaddress,name) {
 			var returnData = 0;
-			var uid = this.$refs.accounts.getUserID();
+			var uid = this.$store.state.userProfile.id;
 
 			if (type != "video") {
 
@@ -225,7 +309,7 @@ export default {
 					})
 					.then(response => {
 						console.log("upload file ok")
-						location.reload();
+						
 
 					})
 					.catch(error => (console.log("upload file failed")))
@@ -236,7 +320,7 @@ export default {
 					"cId": 1,
 					"uId": uid,
 					"token": "11",
-					"videoname": "test",
+					"videoname": name,
 					"url": fileaddress
 				};
 				console.log(data)
@@ -253,7 +337,7 @@ export default {
 					})
 					.then(response => {
 						console.log("create video ok")
-						location.reload();
+						
 
 					})
 					.catch(error => (console.log(error)))
@@ -263,7 +347,7 @@ export default {
 
 		},
 		updateDocumentList() {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 
 			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + 1 + "&" + uid + "&" + token
@@ -314,7 +398,7 @@ export default {
 
 		},
 		getsyllabus() {
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			var token = this.$refs.accounts.getUserToken()
 
 			var reqString = 'http://localhost:8080/v1/class/get-class-files/' + 1 + "&" + uid + "&" + token
@@ -374,7 +458,7 @@ export default {
 		},
 		changeFileVis: function(fid, publish_i) {
 			var returnData = false
-			var uid = this.$refs.accounts.getUserID()
+			var uid = this.$store.state.userProfile.id
 			if (uid != 0) {
 
 
@@ -403,10 +487,11 @@ export default {
 					})
 					.then(response => {
 						console.log("changed Visibility")
-						location.reload();
+						this.updateDocumentList()
+
 
 					})
-					.catch(error => (console.log("failed To change")))
+					.catch(error => (console.log(error)))
 
 			} else {
 				returnData = false
@@ -414,7 +499,8 @@ export default {
 		},
 		deleteDocument: function(fid) {
 			var returnData = false
-			if (this.uid != 0 && fid != 0) {
+			var uid = this.$store.state.userProfile.id
+			if (uid != 0 && fid != 0) {
 				var reqString = 'http://localhost:8080/v1/document/delete-file/' + fid + "&" + this.uid + "&" + this.token
 				console.log(reqString);
 				axios
@@ -423,9 +509,9 @@ export default {
 
 						console.log(response.data)
 
-						location.reload();
+					
 					})
-					.catch(error => (console.log("failed to delete")))
+					.catch(error => (console.log(error)))
 
 			} else {
 				console.log("cant delete")
@@ -449,14 +535,14 @@ export default {
 			this.upload = false;
 
 			//upload file 
-			this.createDocument(type, this.$refs.fileLoc.files[0])
+			this.createDocument(type, this.$refs.fileLoc.files[0],"no")
 
 		},
-		finishUploadVideo(type) {
+		finishUploadVideo(type,name) {
 			this.upload = false;
 			//upload file 
-
-			this.createDocument("video", this.url)
+			console.log(this.videoName)
+			this.createDocument("video", this.url, this.videoName)
 
 		},
 		viewFile(fid) {
@@ -476,12 +562,30 @@ export default {
 		},
 		playing() {
 			console.log('\o/ we are watching!!!')
+		},
+		getColorBlindMode(){
+			var uid = this.$store.state.userProfile.id
+			var token = this.$refs.accounts.getUserToken()
+			var reqString = 'http://localhost:8080/v1/account/get-account/' + uid + "&" + token
+				axios
+					.get(reqString)
+					.then(response => {
+						//console.log(response);
+						if (response.data.status == "success") {
+							this.colorBlind = response.data.account.colorBlind;
+						} else {
+							console.log("failed in colorBlind Mode")
+						}
+
+					})
+					.catch(error => (console.log(error)))
 		}
 	},
 	mounted() {
 		//this.getDocument()
 		this.getsyllabus()
-		this.isInst = this.$refs.accounts.isInstructor()
+		this.isInst = this.$store.state.userProfile.colorBlind
+		this.getColorBlindMode();
 	},
 	computed: {
 		player() {

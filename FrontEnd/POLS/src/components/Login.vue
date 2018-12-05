@@ -6,7 +6,7 @@
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4>
             <v-card class="elevation-12">
-              <v-toolbar dark color="primary">
+              <v-toolbar dark color="primary" el>
                 <v-toolbar-title>Login </v-toolbar-title>
                   <v-spacer></v-spacer>
                     <v-tooltip bottom>
@@ -38,6 +38,7 @@
                   <v-text-field
                     v-model="password"
                     label="Password"
+                    :type="'password'"
                     required
                   ></v-text-field>
                 </v-form>
@@ -66,21 +67,37 @@ import {mapGetters} from 'vuex';
       password:'',
       }
     },
-    computed: mapGetters ({
-     id: 'id',
-     address: 'address',
-     xxx:'homes'
-   }),
+    computed: mapGetters (
+      {}
+    ),
    methods:
      {
        Loginuser()
        {
          axios.get('http://localhost:8080/v1/account/login/'+this.username+"&"+this.password)
          .then (response => {
- 					if (response.data.status == "success"){this.$router.push('register')}
-            else this.$router.push('/')
+ 					if (response.data.status == "success"){
+
+            this.$store.state.assignmentLists.push(response.data.assignmentLists[0]),
+            this.$store.state.classes.push(response.data.classes[0]),
+            this.$store.state.userProfile = (response.data.userProfile),
+            this.$store.state.status = response.data.status,
+            this.$store.state.token = response.data.token,
+            this.$store.state.loginedIn = true,
+
+            this.$router.push('classes')
+          }
+
+            else	if (response.data.status == "failure")
+            {
+              this.username = '',
+              this.password ='',
+
+              this.$router.push('login')
+            }
           }
         )
+
       }
     }
 }
