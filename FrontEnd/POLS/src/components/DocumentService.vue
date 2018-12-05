@@ -25,7 +25,7 @@
 				</div>
 				<div>
 					<v-subheader><b>Upload Video</b></v-subheader>
-					<v-text-field label="Video Link" ref="vLink"></v-text-field>
+					<v-text-field label="Video Link" v-model="url"></v-text-field>
 					<v-btn small color="primary" @click="finishUploadVideo()">Upload video</v-btn>
 				</div>
 			</div>
@@ -124,7 +124,8 @@ export default {
 			token: 0,
 			isInst: false,
 			showFile: false,
-			fileDefault: "file"
+			fileDefault: "file",
+			url: "https://www.youtube.com/watch?v=wfYbgdo8e-8",
 		}
 	},
 	methods: {
@@ -202,14 +203,14 @@ export default {
 		},
 		createDocument: function(type, fileaddress) {
 			var returnData = 0;
-
+			var uid = this.$refs.accounts.getUserID();
 
 			if (type != "video") {
 
 				var data = new FormData();
 				data.append("file", fileaddress);
 				data.append("cId", 1);
-				data.append("uId", 1);
+				data.append("uId", uid);
 				data.append("type", type);
 				data.append("publish", "true");
 				data.append("token", this.token);
@@ -224,33 +225,38 @@ export default {
 					})
 					.then(response => {
 						console.log("upload file ok")
-						location.reload(); 
-						
+						location.reload();
+
 					})
 					.catch(error => (console.log("upload file failed")))
 			} else {
-				console.log(fileaddress)
-				var data = new FormData();
-				
-				data.append("cId", 1);
-				data.append("uId", 1);
-				data.append("type", "video");
-				data.append("videoName", "  ");
-				data.append("url", fileaddress);
-				var reqString = 'http://localhost:8080/v1/document/upload-file/';
-				console.log(reqString);
-				axios
-					.post(reqString, data, {
-						headers: {
-							'Content-Type': 'multipart/form-data'
-						}
-					})
+				//console.log(fileaddress)
+
+				let data = {
+					"cId": 1,
+					"uId": uid,
+					"token": "11",
+					"videoname": "test",
+					"url": fileaddress
+				};
+				console.log(data)
+
+
+				axios({
+							url: 'http://localhost:8080/v1/document/upload-video',
+							method: 'post',
+							data: JSON.stringify(data),
+							headers: {
+							'Content-Type': 'application/json',
+
+							}
+						})
 					.then(response => {
 						console.log("create video ok")
-						location.reload(); 
-						
+						location.reload();
+
 					})
-					.catch(error => (console.log("create video failed")))
+					.catch(error => (console.log(error)))
 
 			}
 
@@ -277,7 +283,9 @@ export default {
 									filename: (response.data.files[item].filename),
 									filetype: (response.data.files[item].type),
 									filepublish: (response.data.files[item].publish)
+
 								})
+
 
 							}
 						} else {
@@ -366,11 +374,12 @@ export default {
 		},
 		changeFileVis: function(fid, publish_i) {
 			var returnData = false
-			if ( this.uid != 0 ) {
+			var uid = this.$refs.accounts.getUserID()
+			if (uid != 0) {
 
 
 				var data = new FormData();
-				data.append("uId", this.uid);
+				data.append("uId", uid);
 				data.append("fId", fid);
 				data.append("token", 0);
 				data.append("publish", !publish_i);
@@ -402,7 +411,7 @@ export default {
 
 						console.log(response.data)
 
-						location.reload(); 
+						location.reload();
 					})
 					.catch(error => (console.log("failed to delete")))
 
@@ -434,7 +443,8 @@ export default {
 		finishUploadVideo(type) {
 			this.upload = false;
 			//upload file 
-			this.createDocument("video", this.$refs.vLink.value)
+
+			this.createDocument("video", this.url)
 
 		},
 		viewFile(fid) {
