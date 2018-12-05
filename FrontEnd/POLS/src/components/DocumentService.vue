@@ -243,14 +243,14 @@ export default {
 
 
 				axios({
-							url: 'http://localhost:8080/v1/document/upload-video',
-							method: 'post',
-							data: JSON.stringify(data),
-							headers: {
+						url: 'http://localhost:8080/v1/document/upload-video',
+						method: 'post',
+						data: JSON.stringify(data),
+						headers: {
 							'Content-Type': 'application/json',
 
-							}
-						})
+						}
+					})
 					.then(response => {
 						console.log("create video ok")
 						location.reload();
@@ -383,15 +383,27 @@ export default {
 				data.append("fId", fid);
 				data.append("token", 0);
 				data.append("publish", !publish_i);
+
+				let data = {
+					"id": uid,
+					"fId": fid,
+					"token": "11",
+					"publish": !publish_i
+				};
 				console.log(data)
 				axios
-					.post('http://localhost:8080/v1/document/update-file/', data, {
+					({
+						url: 'http://localhost:8080/v1/document/update-document',
+						method: 'post',
+						data: JSON.stringify(data),
 						headers: {
-							'Content-Type': 'multipart/form-data'
+							'Content-Type': 'application/json',
+
 						}
 					})
 					.then(response => {
 						console.log("changed Visibility")
+						location.reload();
 
 					})
 					.catch(error => (console.log("failed To change")))
