@@ -66,22 +66,33 @@ import {mapGetters} from 'vuex';
       password:'',
       }
     },
-    computed: mapGetters ({
-     id: 'id',
-     address: 'address',
-     xxx:'homes'
-   }),
+    computed: mapGetters (
+      {}
+    ),
    methods:
      {
        Loginuser()
        {
          axios.get('http://localhost:8080/v1/account/login/'+this.username+"&"+this.password)
          .then (response => {
- 					if (response.data.status == "success"){this.$router.push('AfterLogin')}
-            else	if (response.data.status == "failure"){
+ 					if (response.data.status == "success"){
+
+            this.$store.state.assignmentLists.push(response.data.assignmentLists[0]),
+            this.$store.state.classes.push(response.data.classes[0]),
+            this.$store.state.userProfile.push(response.data.userProfile),
+            this.$store.state.status = response.data.status,
+            this.$store.state.token = response.data.token,
+
+            this.$router.push('test')
+          }
+
+            else	if (response.data.status == "failure")
+            {
               this.username = '',
               this.password ='',
-              this.$router.push('login')}
+
+              this.$router.push('login')
+            }
           }
         )
 

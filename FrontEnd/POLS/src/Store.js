@@ -6,23 +6,14 @@ Vue.use(Vuex);
 
  export const store = new Vuex.Store(
    {
-     state:
-     {
-       userProfile:
-       {
-         id:'',
-         username:'',
-         passwd:'',
-         gender:'',
-         role:'',
-         birth:'',
-         address:'',
-         email:'',
-         colorBlind:''
-       },
-       token: ''
-
+     state:{
+       assignmentLists:[],
+       classes:[],
+       userProfile:[],
+       status:'',
+       token:''
      },
+
      getters:
      {
 

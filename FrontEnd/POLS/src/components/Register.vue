@@ -146,19 +146,27 @@
         }
       axios.post('http://localhost:8080/v1/account/register',
       newuser,
-      { headers: {'Content-Type': 'application/json' }})
+      { headers: {'Content-Type': 'application/json;charset=UTF-8' }})
+
       .then (response => {
-       if (response.data.status == "success"){this.$router.push('AfterLogin')}
+       if (response.data.status == "success")
+         {
+
+           this.$store.state.userProfile.push(response.data.userProfile),
+           this.$store.state.status = response.data.status,
+           this.$store.state.token = response.data.token,
+           console.log(this.$store.state.status)
+           this.$router.push('AfterLogin')
+         }
        else	if (response.data.status == "failure")
-       {
-          this.username = '',
-          this.password ='',
-          
-          this.$router.push('login')
+        {
+          this.$store.state.status = response.data.status
+          console.log(this.$store.state.status)
         }
-                }
-             )
-            }
-          }
-        }
+      }
+    )
+      }
+    }
+  }
+
 </script>
