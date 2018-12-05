@@ -28,7 +28,7 @@ export default {
 	data: () => ({
 		drawer: null,
 		items: [
-			{ icon: 'home', text: 'Home', link: '/AfterLogin' },
+			{ icon: 'home', text: 'Home', link: '/Classes' },
 			{
 				icon: 'class',
 				'icon-alt': 'class',
@@ -49,13 +49,13 @@ export default {
 				link: '/tutorial',
 				model: false,
 				children: [
-					{ icon: 'pregnant_woman', text: 'Prebirth', link: '/AfterLogin' },
-					{ icon: 'exposure_zero', text: '0-12 Months', link: '/AfterLogin' },
-					{ icon: 'exposure_plus_1', text: '12-24 Months', link: '/AfterLogin' },
-					{ icon: 'exposure_plus_2', text: '24-36 Months', link: '/AfterLogin' }
+					{ icon: 'pregnant_woman', text: 'Prebirth', link: '/Classes' },
+					{ icon: 'exposure_zero', text: '0-12 Months', link: '/Classes' },
+					{ icon: 'exposure_plus_1', text: '12-24 Months', link: '/Classes' },
+					{ icon: 'exposure_plus_2', text: '24-36 Months', link: '/Classes' }
 				]
 			},
-			{ icon: 'loyalty', text: 'Points', link: '/AfterLogin' },
+			{ icon: 'loyalty', text: 'Points', link: '/Classes' },
 		]
 	}),
 	mounted() {

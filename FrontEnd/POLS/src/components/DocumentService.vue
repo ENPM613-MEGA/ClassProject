@@ -28,6 +28,7 @@
 					<div>
 						<v-subheader><b>Upload Video</b></v-subheader>
 						<v-text-field label="Video Link" v-model="url"></v-text-field>
+						<v-text-field label="Video Name" v-model="videoName"></v-text-field>
 						<v-btn small color="red" @click="finishUploadVideo()">Upload video</v-btn>
 					</div>
 				</div>
@@ -40,7 +41,8 @@
 				<div v-else>
 					<div v-if="showFile" auto-grow:true>
 						<div v-if="docData.isVideo">
-							<youtube :video-id="videoId" ref="youtube" @playing="playing"></youtube>
+							<youtube :video-id="docData.videoId" ref="youtube" @playing="playing"></youtube>
+							<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
 						</div>
 						<div v-else>
 							<v-textarea v-model="docData.docContent" rows="25"></v-textarea>
@@ -103,6 +105,7 @@
 					<div>
 						<v-subheader><b>Upload Video</b></v-subheader>
 						<v-text-field label="Video Link" v-model="url"></v-text-field>
+						<v-text-field label="Video Name" v-model="videoName"></v-text-field>
 						<v-btn small color="primary" @click="finishUploadVideo()">Upload video</v-btn>
 					</div>
 				</div>
@@ -115,7 +118,8 @@
 				<div v-else>
 					<div v-if="showFile" auto-grow:true>
 						<div v-if="docData.isVideo">
-							<youtube :video-id="videoId" ref="youtube" @playing="playing"></youtube>
+							<youtube :video-id="docData.videoId" ref="youtube" @playing="playing"></youtube>
+							<v-btn small color="primary" @click="closeFile()">Close file </v-btn>
 						</div>
 						<div v-else>
 							<v-textarea v-model="docData.docContent" rows="25"></v-textarea>
@@ -174,7 +178,8 @@ export default {
 		quillEditor,
 		AccountServices,
 		VueYoutube,
-		Vuex
+		Vuex,
+		Router
 	},
 
 	data() {
@@ -193,12 +198,14 @@ export default {
 				classID: 0,
 				createDate: 0,
 				isVideo: false,
-				videoId: 'lG0Ys-2d4MA',
+				videoId: '',
 
 			},
 			colorBlind: false,
 			classDocumentList: [],
 			upload: false,
+
+			videoName:"test",
 
 			syllabus: false,
 			ableToEdit: false,
@@ -222,33 +229,27 @@ export default {
 					.then(response => {
 
 						if (response.status == "200") {
-							//console.log(JSON.stringify(response.data))
+							console.log(JSON.stringify(response.data))
 							if (JSON.stringify(response.headers) == "{\"content-type\"\:\"text/html\"}") {
 								//console.log("is html")
 								this.docData.docContent = response.data;
 
 							} else {
 
-								if (response.data.filename == "video") {
+								
+									
+									
+							
+								this.docData.docContent = (response.data)
+								if (JSON.stringify(this.docData.docContent).includes("https://www.youtube.com/")) {
 									console.log("is video")
-									this.docData.fid = response.data.id;
-									this.docData.classID = response.data.classId;
-									this.docData.fileName = response.data.filename;
-									this.docData.docType = response.data.type;
-									this.docData.docContent = response.data.path;
-									this.docData.createDate = response.data.createDate;
-									this.docData.publish = response.data.publish;
-								} else {
+									this.docData.isVideo = true;
+
+									this.docData.videoId = this.docData.docContent.document.path.substring(32, this.docData.docContent.document.path.length)
+								}else{
+									this.docData.isVideo = false;
 									console.log("is not video")
-									this.docData.fid = response.data.id;
-									this.docData.classID = response.data.classId;
-									this.docData.fileName = response.data.filename;
-									this.docData.docContent = (response.data);
-									this.docData.docContent = response.data.path;
-									this.docData.createDate = response.data.createDate;
-									this.docData.publish = response.data.publish;
 								}
-								this.docData.docContent = (response.data);
 
 							}
 
@@ -261,7 +262,7 @@ export default {
 					})
 					.catch(error => {
 
-						console.log("bad at getting document")
+						console.log(error)
 					})
 
 				//console.log("finished request")
@@ -284,7 +285,7 @@ export default {
 				returnData = false
 			}
 		},
-		createDocument: function(type, fileaddress) {
+		createDocument: function(type, fileaddress,name) {
 			var returnData = 0;
 			var uid = this.$store.state.userProfile.id;
 
@@ -319,7 +320,7 @@ export default {
 					"cId": 1,
 					"uId": uid,
 					"token": "11",
-					"videoname": "test",
+					"videoname": name,
 					"url": fileaddress
 				};
 				console.log(data)
@@ -508,9 +509,9 @@ export default {
 
 						console.log(response.data)
 
-						router.push("Classes")
+					
 					})
-					.catch(error => (console.log("failed to delete")))
+					.catch(error => (console.log(error)))
 
 			} else {
 				console.log("cant delete")
@@ -534,14 +535,14 @@ export default {
 			this.upload = false;
 
 			//upload file 
-			this.createDocument(type, this.$refs.fileLoc.files[0])
+			this.createDocument(type, this.$refs.fileLoc.files[0],"no")
 
 		},
-		finishUploadVideo(type) {
+		finishUploadVideo(type,name) {
 			this.upload = false;
 			//upload file 
-
-			this.createDocument("video", this.url)
+			console.log(this.videoName)
+			this.createDocument("video", this.url, this.videoName)
 
 		},
 		viewFile(fid) {

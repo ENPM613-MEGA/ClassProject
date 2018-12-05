@@ -1,5 +1,6 @@
 <template>
 	<div>
+		 <router-view></router-view>
 		<AccountServices ref="accounts"></AccountServices>
 		<div v-if="colorBlind">
 			<v-navigation-drawer fixed clipped class="grey lighten-4" app v-model="drawer" ripple>
@@ -72,6 +73,9 @@
 				<v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
 				<span class="title ml-3 mr-5">Parents Online Learning System</span></span>
 				<v-spacer></v-spacer>
+				<v-btn icon :to="logout">
+					<v-icon>exit_to_app</v-icon>
+				</v-btn>
 			</v-toolbar>
 		</div>
 		<div v-else>
@@ -145,6 +149,9 @@
 				<v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
 				<span class="title ml-3 mr-5">Parents Online Learning System</span></span>
 				<v-spacer></v-spacer>
+				<v-btn icon :to="logout">
+					<v-icon>exit_to_app</v-icon>
+				</v-btn>
 			</v-toolbar>
 		</div>
 	</div>
@@ -153,6 +160,8 @@
 import axios from 'axios';
 import AccountServices from '@/components/AccountServices'
 import Vuex from 'vuex';
+import Router from 'vue-router'
+
 export default {
 	components: {
 		AccountServices,
@@ -186,6 +195,7 @@ export default {
 		drawer: null,
 		colorBlind: false,
 		items: [],
+		logout:"/login"
 	}),
 	mounted() {
 		var uid = this.$store.state.userProfile.id

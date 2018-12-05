@@ -1,0 +1,12 @@
+library Used 
+Front end 
+1. Vue.js for framework  	-MIT License
+2. Quill for editor 		-MIT License
+3. Vuetify					-MIT License
+4. Roboto Font from google 	-Apache License 2.0
+5. Vuelidate 
+6. Polyfill
+
+Backend 
+
+
