@@ -244,7 +244,7 @@ export default {
 								if (JSON.stringify(this.docData.docContent).includes("https://www.youtube.com/")) {
 									console.log("is video")
 									this.docData.isVideo = true;
-
+									this.docContent = this.docData.docContent.document.path;
 									this.docData.videoId = this.docData.docContent.document.path.substring(32, this.docData.docContent.document.path.length)
 								}else{
 									this.docData.isVideo = false;
