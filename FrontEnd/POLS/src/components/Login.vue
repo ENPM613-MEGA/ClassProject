@@ -6,7 +6,7 @@
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4>
             <v-card class="elevation-12">
-              <v-toolbar dark color="primary">
+              <v-toolbar dark color="primary" el>
                 <v-toolbar-title>Login </v-toolbar-title>
                   <v-spacer></v-spacer>
                     <v-tooltip bottom>
@@ -77,10 +77,14 @@ import {mapGetters} from 'vuex';
        {
          axios.get('http://localhost:8080/v1/account/login/'+this.username+"&"+this.password)
          .then (response => {
- 					if (response.data.status == "success"){this.$router.push('register')}
-            else this.$router.push('/')
+ 					if (response.data.status == "success"){this.$router.push('AfterLogin')}
+            else	if (response.data.status == "failure"){
+              this.username = '',
+              this.password ='',
+              this.$router.push('login')}
           }
         )
+
       }
     }
 }

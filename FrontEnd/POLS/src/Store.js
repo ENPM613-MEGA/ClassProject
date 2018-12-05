@@ -19,7 +19,8 @@ Vue.use(Vuex);
          address:'',
          email:'',
          colorBlind:''
-       }
+       },
+       token: ''
 
      },
      getters:
