@@ -83,7 +83,7 @@ import {mapGetters} from 'vuex';
             this.$store.state.status = response.data.status,
             this.$store.state.token = response.data.token,
 
-            this.$router.push('test')
+            this.$router.push('classes')
           }
 
             else	if (response.data.status == "failure")
