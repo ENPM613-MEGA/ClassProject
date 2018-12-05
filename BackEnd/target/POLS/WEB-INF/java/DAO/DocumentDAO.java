@@ -90,7 +90,7 @@ public class DocumentDAO {
 
 
     private final String GET_CLASS_FILES = "SELECT id, filename, publish, type " +
-                                           "FROM Documents WHERE c_id = ? AND (type = 'file' OR type = 'syllabus')";
+                                           "FROM Documents WHERE c_id = ?";
 
     /*
     * get the raw list of files of specific class
