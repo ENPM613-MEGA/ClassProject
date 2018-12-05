@@ -155,13 +155,13 @@
            this.$store.state.userProfile.push(response.data.userProfile),
            this.$store.state.status = response.data.status,
            this.$store.state.token = response.data.token,
-           console.log(this.$store.state.status)
+
            this.$router.push('AfterLogin')
          }
        else	if (response.data.status == "failure")
         {
           this.$store.state.status = response.data.status
-          console.log(this.$store.state.status)
+          
         }
       }
     )
