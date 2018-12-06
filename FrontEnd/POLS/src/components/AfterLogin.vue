@@ -12,6 +12,14 @@
 				</v-layout>
 			</v-container>
 		</v-content>
+		<v-toolbar>{{h1}}</v-toolbar>
+		<v-toolbar>{{h2}}</v-toolbar>
+		<v-toolbar>{{h3}}</v-toolbar>
+		<v-toolbar>{{h4}}</v-toolbar>
+		<v-toolbar>{{h5}}</v-toolbar>
+		<v-toolbar>{{h6}}</v-toolbar>
+		<v-toolbar>{{h7}}</v-toolbar>
+		<v-toolbar>{{h8}}</v-toolbar>
 	</v-app>
 </template>
 <script>

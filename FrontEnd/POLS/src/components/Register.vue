@@ -31,7 +31,6 @@
               <v-form v-model="valid">
                   <v-text-field
                     v-model="username"
-                    
                     :counter="20"
                     label="User Name"
                     required
@@ -44,46 +43,46 @@
                   ></v-text-field>
                   <v-text-field
                     v-model="gender"
-                    
+
                     label="Gender"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="role"
-                    
+
                     label="Role"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="birth"
-                    
+
                     label="Date of Birth"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="points"
-                   
+
                     :counter="10"
                     label="Points"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="address"
-                    :rules="passwordRules"
+
                     :counter="10"
                     label="Address"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="email"
-                    
+                    :rules="emailRules"
                     :counter="10"
                     label="Email"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="colorBlind"
-                    
+
                     :counter="10"
                     label="Color Blind"
                     required
@@ -93,7 +92,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click=''>Register</v-btn>
+                <v-btn color="primary" @click='Registeruser'>Register</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -124,7 +123,7 @@
         v => v.length <= 10 || 'Email must be less than 10 characters'
       ],
       passwordRules: [
-        v => !!v || 'Password is needed',
+        v => !!v || 'Password is required',
         v => /.+@.+/.test(v) || 'Invalid password'
       ]
     }),
@@ -161,7 +160,7 @@
        else	if (response.data.status == "failure")
         {
           this.$store.state.status = response.data.status
-          
+
         }
       }
     )
