@@ -346,7 +346,8 @@ export default {
 		var uid = this.$store.state.userProfile.id
 		var token = 11;
 		this.getClasses(uid, token)
-		if (this.$store.state.userProfile == "instructor") {
+		console.log(this.$store.state.userProfile.role)
+		if (this.$store.state.userProfile.role == "instructor") {
 			this.isInst = true	
 		}else{
 			this.isInst = false

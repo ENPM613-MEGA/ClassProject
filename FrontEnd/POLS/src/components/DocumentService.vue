@@ -1,6 +1,5 @@
 <template>
 	<div>
-
 		<AccountServices ref="accounts"></AccountServices>
 		<div v-if="colorBlind">
 			<div v-if="show">
@@ -61,7 +60,7 @@
 								<v-list-tile-content>
 									<h3 class="headline mb-0">{{ item.filename}}</h3>
 									<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
-									<div v-if="isInst">
+									
 										<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
 										<div>
 											<v-btn small color="red" @click="viewFile(item.fileID)">view file </v-btn>
@@ -71,7 +70,7 @@
 											<v-btn small color="red" @click="editFile(item.fileID)">edit file </v-btn>
 											<v-btn small color="red" @click="changeFileVis(item.fileID, item.filepublish)">change Visibility </v-btn>
 										</div>
-									</div>
+									
 								</v-list-tile-content>
 							</v-container>
 						</v-container>
@@ -138,16 +137,14 @@
 								<v-list-tile-content>
 									<h3 class="headline mb-0">{{ item.filename}}</h3>
 									<v-list-tile-sub-title>File Type:{{ item.filetype }}</v-list-tile-sub-title>
+									<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
+									<div>
+										<v-btn small color="primary" @click="viewFile(item.fileID)">view file </v-btn>
+									</div>
 									<div v-if="isInst">
-										<v-list-tile-sub-title>Is File Visible:{{ item.filepublish }}</v-list-tile-sub-title>
-										<div>
-											<v-btn small color="primary" @click="viewFile(item.fileID)">view file </v-btn>
-										</div>
-										<div v-if="isInst">
-											<v-btn small color="primary" @click="deleteDocument(item.fileID)">delete file </v-btn>
-											<v-btn small color="primary" @click="editFile(item.fileID)">edit file </v-btn>
-											<v-btn small color="primary" @click="changeFileVis(item.fileID, item.filepublish)">change Visibility </v-btn>
-										</div>
+										<v-btn small color="primary" @click="deleteDocument(item.fileID)">delete file </v-btn>
+										<v-btn small color="primary" @click="editFile(item.fileID)">edit file </v-btn>
+										<v-btn small color="primary" @click="changeFileVis(item.fileID, item.filepublish)">change Visibility </v-btn>
 									</div>
 								</v-list-tile-content>
 							</v-container>
@@ -171,6 +168,9 @@ import Vuex from 'vuex';
 import Router from 'vue-router'
 
 Vue.use(VueYoutube)
+
+
+
 export default {
 
 	components: {
@@ -205,7 +205,7 @@ export default {
 			classDocumentList: [],
 			upload: false,
 
-			videoName:"test",
+			videoName: "test",
 
 			syllabus: false,
 			ableToEdit: false,
@@ -236,17 +236,17 @@ export default {
 
 							} else {
 
-								
-									
-									
-							
+
+
+
+
 								this.docData.docContent = (response.data)
 								if (JSON.stringify(this.docData.docContent).includes("https://www.youtube.com/")) {
 									console.log("is video")
 									this.docData.isVideo = true;
 									this.docContent = this.docData.docContent.document.path;
 									this.docData.videoId = this.docData.docContent.document.path.substring(32, this.docData.docContent.document.path.length)
-								}else{
+								} else {
 									this.docData.isVideo = false;
 									console.log("is not video")
 								}
@@ -285,10 +285,9 @@ export default {
 				returnData = false
 			}
 		},
-		createDocument: function(type, fileaddress,name) {
+		createDocument: function(type, fileaddress, name) {
 			var returnData = 0;
 			var uid = this.$store.state.userProfile.id;
-
 			if (type != "video") {
 
 				var data = new FormData();
@@ -309,7 +308,7 @@ export default {
 					})
 					.then(response => {
 						console.log("upload file ok")
-						
+
 
 					})
 					.catch(error => (console.log("upload file failed")))
@@ -337,7 +336,7 @@ export default {
 					})
 					.then(response => {
 						console.log("create video ok")
-						
+
 
 					})
 					.catch(error => (console.log(error)))
@@ -487,7 +486,7 @@ export default {
 					})
 					.then(response => {
 						console.log("changed Visibility")
-						this.updateDocumentList()
+						//this.updateDocumentList()
 
 
 					})
@@ -509,7 +508,7 @@ export default {
 
 						console.log(response.data)
 
-					
+
 					})
 					.catch(error => (console.log(error)))
 
@@ -535,10 +534,10 @@ export default {
 			this.upload = false;
 
 			//upload file 
-			this.createDocument(type, this.$refs.fileLoc.files[0],"no")
+			this.createDocument(type, this.$refs.fileLoc.files[0], "no")
 
 		},
-		finishUploadVideo(type,name) {
+		finishUploadVideo(type, name) {
 			this.upload = false;
 			//upload file 
 			console.log(this.videoName)
@@ -563,28 +562,21 @@ export default {
 		playing() {
 			console.log('\o/ we are watching!!!')
 		},
-		getColorBlindMode(){
-			var uid = this.$store.state.userProfile.id
-			var token = this.$refs.accounts.getUserToken()
-			var reqString = 'http://localhost:8080/v1/account/get-account/' + uid + "&" + token
-				axios
-					.get(reqString)
-					.then(response => {
-						//console.log(response);
-						if (response.data.status == "success") {
-							this.colorBlind = response.data.account.colorBlind;
-						} else {
-							console.log("failed in colorBlind Mode")
-						}
+		getColorBlindMode() {
+			this.colorBlind = this.$store.state.userProfile.colorBlind
+			console.log(this.colorBlind)
 
-					})
-					.catch(error => (console.log(error)))
 		}
 	},
 	mounted() {
 		//this.getDocument()
+		this.uid = this.$store.state.userProfile.id
 		this.getsyllabus()
-		this.isInst = this.$store.state.userProfile.colorBlind
+		if (this.$store.state.userProfile.role == "instructor") {
+			this.isInst = true
+		} else {
+			this.isInst = false
+		}
 		this.getColorBlindMode();
 	},
 	computed: {

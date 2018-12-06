@@ -19,6 +19,7 @@
 <script>
 import AccountServices from '@/components/AccountServices'
 import DocumentService from '@/components/DocumentService'
+import Router from 'vue-router'
 export default {
 	components:{
 		AccountServices,
@@ -41,12 +42,10 @@ export default {
 
 		}
 	},
-	onMount(){
-		logged:this.$store.state.loginedIn;
+	mounted(){
+
 	}, 
-	computed(){
-		logged:this.$store.state.loginedIn;
-	}
+
 
 
 

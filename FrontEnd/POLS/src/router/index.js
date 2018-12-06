@@ -39,11 +39,6 @@ export default new Router({
         component: Login
       },
       {
-        path: "/register",
-        name: "register",
-        component: Register
-      },
-      {
         path: "/AfterLogin",
         name: "AfterLogin",
         component: AfterLogin

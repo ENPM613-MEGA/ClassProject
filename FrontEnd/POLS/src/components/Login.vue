@@ -31,7 +31,7 @@
               <v-form v-model="valid">
                   <v-text-field
                     v-model="username"
-                    :counter="10"
+                    :counter="20"
                     label="User Name"
                     required
                   ></v-text-field>

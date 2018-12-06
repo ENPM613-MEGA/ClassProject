@@ -31,8 +31,8 @@
               <v-form v-model="valid">
                   <v-text-field
                     v-model="username"
-                    :rules="passwordRules"
-                    :counter="10"
+                    
+                    :counter="20"
                     label="User Name"
                     required
                   ></v-text-field>
@@ -44,25 +44,25 @@
                   ></v-text-field>
                   <v-text-field
                     v-model="gender"
-                    :rules="passwordRules"
+                    
                     label="Gender"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="role"
-                    :rules="passwordRules"
+                    
                     label="Role"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="birth"
-                    :rules="passwordRules"
+                    
                     label="Date of Birth"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="points"
-                    :rules="passwordRules"
+                   
                     :counter="10"
                     label="Points"
                     required
@@ -76,14 +76,14 @@
                   ></v-text-field>
                   <v-text-field
                     v-model="email"
-                    :rules="passwordRules"
+                    
                     :counter="10"
                     label="Email"
                     required
                   ></v-text-field>
                   <v-text-field
                     v-model="colorBlind"
-                    :rules="passwordRules"
+                    
                     :counter="10"
                     label="Color Blind"
                     required
@@ -93,7 +93,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click='Registeruser'>Register</v-btn>
+                <v-btn color="primary" @click=''>Register</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
